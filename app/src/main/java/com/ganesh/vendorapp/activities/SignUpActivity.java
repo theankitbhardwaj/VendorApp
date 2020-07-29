@@ -1,14 +1,21 @@
-package com.ganesh.vendorapp;
+package com.ganesh.vendorapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.ganesh.vendorapp.models.DefaultResponse;
+import com.ganesh.vendorapp.R;
+import com.ganesh.vendorapp.api.RetrofitClient;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -27,11 +34,8 @@ public class SignUpActivity extends AppCompatActivity {
         et_confirm_password = findViewById(R.id.et_confirm_password);
 
         btn_signup = findViewById(R.id.btn_signup);
-        btn_signup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        btn_signup.setOnClickListener((View v) ->{
                 userSignUp();
-            }
         });
 
     }
@@ -76,7 +80,29 @@ public class SignUpActivity extends AppCompatActivity {
 
 
         /* Do user registration using the api call */
+        Call<DefaultResponse> call = RetrofitClient
+                .getInstance()
+                .getApi()
+                .createUser(fname,lname,email,password);
 
+        call.enqueue(new Callback<DefaultResponse>() {
+            @Override
+            public void onResponse(Call<DefaultResponse> call, Response<DefaultResponse> response) {
+
+                if(response.code() == 201){
+                    DefaultResponse res = response.body();
+                    Toast.makeText(SignUpActivity.this, res.getMsg(), Toast.LENGTH_SHORT).show();
+                }else if (response.code() == 422){
+                    Toast.makeText(SignUpActivity.this, "User already exist", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<DefaultResponse> call, Throwable t) {
+
+            }
+        });
 
     }
 

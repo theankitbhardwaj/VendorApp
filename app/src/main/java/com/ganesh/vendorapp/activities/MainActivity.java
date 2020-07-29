@@ -1,8 +1,10 @@
-package com.ganesh.vendorapp;
+package com.ganesh.vendorapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.ganesh.vendorapp.R;
 
 public class MainActivity extends AppCompatActivity {
 

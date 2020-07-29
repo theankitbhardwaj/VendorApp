@@ -1,10 +1,12 @@
-package com.ganesh.vendorapp;
+package com.ganesh.vendorapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
+import com.ganesh.vendorapp.R;
 
 public class LoginActivity extends AppCompatActivity {
 
