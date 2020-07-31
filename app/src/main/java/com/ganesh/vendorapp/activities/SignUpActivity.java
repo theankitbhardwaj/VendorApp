@@ -2,79 +2,101 @@ package com.ganesh.vendorapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ganesh.vendorapp.models.DefaultResponse;
 import com.ganesh.vendorapp.R;
 import com.ganesh.vendorapp.api.RetrofitClient;
+import com.ganesh.vendorapp.storage.SharedPrefManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static java.lang.System.out;
+
 public class SignUpActivity extends AppCompatActivity {
 
-    private EditText et_fname, et_lname, et_email, et_password, et_confirm_password;
-    private Button btn_signup;
+    private EditText inputFirstName, inputLastName, inputEmail, inputPassword, inputConfirmPassword;
+    private Button btnSignup;
+    private TextView backtoLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+        setContentView(R.layout.activity_signup);
 
-        et_fname = findViewById(R.id.et_fname);
-        et_lname = findViewById(R.id.et_lname);
-        et_email = findViewById(R.id.et_email);
-        et_password = findViewById(R.id.et_password);
-        et_confirm_password = findViewById(R.id.et_confirm_password);
+        inputFirstName = findViewById(R.id.inputFirstName);
+        inputLastName = findViewById(R.id.inputLastName);
+        inputEmail = findViewById(R.id.inputEmail2);
+        inputPassword = findViewById(R.id.inputPassword2);
+        inputConfirmPassword = findViewById(R.id.inputConfirmPassword);
 
-        btn_signup = findViewById(R.id.btn_signup);
-        btn_signup.setOnClickListener((View v) ->{
+        btnSignup = findViewById(R.id.btnSignUp);
+        btnSignup.setOnClickListener((View v) ->{
                 userSignUp();
+        });
+
+        backtoLogin = findViewById(R.id.backtoLogin);
+        backtoLogin.setOnClickListener(view -> {
+            onBackPressed();
         });
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if(SharedPrefManager.getInstance(this).isLoggedIn()){
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
+    }
+
     private void userSignUp() {
-        String fname = et_fname.getText().toString().trim();
-        String lname = et_lname.getText().toString().trim();
-        String email = et_email.getText().toString().trim();
-        String password = et_password.getText().toString().trim();
+        String fname = inputFirstName.getText().toString().trim();
+        String lname = inputLastName.getText().toString().trim();
+        String email = inputEmail.getText().toString().trim();
+        String password = inputPassword.getText().toString().trim();
 
         /* all validation here.. */
         if(fname.isEmpty()){
-            et_fname.setError("First name is required");
-            et_fname.requestFocus();
+            inputFirstName.setError("First name is required");
+            inputFirstName.requestFocus();
             return;
         }
         if(email.isEmpty()){
-            et_email.setError("Email is required");
-            et_email.requestFocus();
+            inputEmail.setError("Email is required");
+            inputEmail.requestFocus();
             return;
         }
         if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            et_email.setError("Enter a valid email");
-            et_email.requestFocus();
+            inputEmail.setError("Enter a valid email");
+            inputEmail.requestFocus();
             return;
         }
         if(password.isEmpty()){
-            et_password.setError("Password required");
-            et_password.requestFocus();
+            inputPassword.setError("Password required");
+            inputPassword.requestFocus();
             return;
         }
         if(password.length() < 6){
-            et_password.setError("Password should be atleast 6 character long");
-            et_password.requestFocus();
+            inputPassword.setError("Password should be atleast 6 character long");
+            inputPassword.requestFocus();
             return;
         }
-        if(!et_confirm_password.getText().toString().trim().equals(password)){
-            et_confirm_password.setError("Password Should be match");
-            et_confirm_password.requestFocus();
+        if(!inputPassword.getText().toString().trim().equals(password)){
+            inputPassword.setError("Password Should be match");
+            inputPassword.requestFocus();
             return;
         }
 
@@ -88,10 +110,11 @@ public class SignUpActivity extends AppCompatActivity {
         call.enqueue(new Callback<DefaultResponse>() {
             @Override
             public void onResponse(Call<DefaultResponse> call, Response<DefaultResponse> response) {
-
+                //out.println(response.code());
                 if(response.code() == 201){
-                    DefaultResponse res = response.body();
-                    Toast.makeText(SignUpActivity.this, res.getMsg(), Toast.LENGTH_SHORT).show();
+                    DefaultResponse defaultResponse = response.body();
+                    Toast.makeText(SignUpActivity.this, defaultResponse.getMsg(), Toast.LENGTH_SHORT).show();
+                    onBackPressed();
                 }else if (response.code() == 422){
                     Toast.makeText(SignUpActivity.this, "User already exist", Toast.LENGTH_SHORT).show();
                 }
@@ -104,10 +127,6 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    public void GotoLoginActivity(View view) {
-        onBackPressed();
     }
 
     @Override

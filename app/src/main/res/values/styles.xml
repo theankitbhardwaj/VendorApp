@@ -1,32 +1,10 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <!--InputTextLayout Style-->
-    <style name="TextInputStyle">
-        <item name="android:focusable">true</item>
-        <item name="android:focusableInTouchMode">true</item>
-        <item name="android:layout_marginBottom">10dp</item>
-        <item name="android:textColorHint">@color/colorHint</item>
-    </style>
-    <!--  EditText Style  -->
-    <style name="EditTextStyle">
-        <item name="android:textSize">20sp</item>
-        <item name="android:ems">10</item>
-    </style>
-
-    <!--    Button Style    -->
-    <style name="ButtonStyle">
-        <item name="android:background">@color/colorButton</item>
-        <item name="android:textColor">@color/colorButtonText</item>
-        <item name="android:textSize">20sp</item>
-        <item name="android:layout_marginBottom">15dp</item>
-        <item name="android:textAllCaps">false</item>
     </style>
 
 </resources>
