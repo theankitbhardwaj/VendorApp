@@ -3,19 +3,29 @@ package com.ganesh.vendorapp.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ganesh.vendorapp.R;
 import com.ganesh.vendorapp.api.RetrofitClient;
 import com.ganesh.vendorapp.models.LoginResponse;
+import com.ganesh.vendorapp.models.OtpResponse;
 import com.ganesh.vendorapp.storage.SharedPrefManager;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,31 +33,42 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private EditText inputEmail, inputPassword;
-    private Button btnLogin;
-    private TextView forgetPassword, gotoRegister;
+    private EditText inputPhoneNo, inputPin;
+    private Button btnLogin, btnSendOtp;
+
+    private ImageView googleLogin, facebookLogin;
+    private static final int RC_SIGN_IN = 1;
+    private GoogleSignInClient mGoogleSignInClient;
+    private String otpPin=null;
+    private String uid = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        inputEmail=findViewById(R.id.inputEmail);
-        inputPassword=findViewById(R.id.inputPassword);
+        inputPhoneNo=findViewById(R.id.inputPhoneNo);
+        inputPin=findViewById(R.id.inputPin);
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        googleLogin = findViewById(R.id.googleLogin);
+        googleLogin.setOnClickListener(view -> {
+            signIn();
+        });
 
         btnLogin=findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener((View v)->{
-            userLogin();
+            signInWithPhoneNumber();
         });
 
-        forgetPassword=findViewById(R.id.forgotPassword);
-        forgetPassword.setOnClickListener((View v)-> {
-
-        });
-
-        gotoRegister=findViewById(R.id.gotoRegister);
-        gotoRegister.setOnClickListener((View v)-> {
-            startActivity(new Intent(LoginActivity.this,SignUpActivity.class));
+        btnSendOtp=findViewById(R.id.otpSend);
+        btnSendOtp.setOnClickListener(view -> {
+            sendOTP();
         });
 
 
@@ -64,61 +85,182 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void userLogin() {
+    private void signInWithPhoneNumber(){
+        String pin = inputPin.getText().toString().trim();
 
-        String email = inputEmail.getText().toString().trim();
-        String password = inputPassword.getText().toString().trim();
-
-        /* all validation here.. */
-        if(email.isEmpty()){
-            inputEmail.setError("Email is required");
-            inputEmail.requestFocus();
-            return;
-        }
-        if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            inputEmail.setError("Enter a valid email");
-            inputEmail.requestFocus();
-            return;
-        }
-        if(password.isEmpty()){
-            inputPassword.setError("Password required");
-            inputPassword.requestFocus();
+        if(pin.isEmpty()){
+            inputPin.setError("Required Pin No.");
+            inputPin.requestFocus();
             return;
         }
 
-        /* Do user login using the api call */
+        if(!pin.equals(otpPin)){
 
-        Call<LoginResponse> call = RetrofitClient
-                .getInstance().getApi().userLogin(email,password);
+            inputPhoneNo.setError("Required Valid Pin");
+            inputPhoneNo.requestFocus();
+            return;
 
-        call.enqueue(new Callback<LoginResponse>() {
+        }else{
+            if(uid != null){
+
+                Call<LoginResponse> call = RetrofitClient.getInstance().getApi().getUser(uid);
+
+
+                call.enqueue(new Callback<LoginResponse>() {
+                    @Override
+                    public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+
+                        LoginResponse loginResponse = response.body();
+
+                        if(!loginResponse.isErr()){
+
+                            //save user in sheared preference.
+                            SharedPrefManager.getInstance(LoginActivity.this)
+                                    .saveUser(loginResponse.getUser());
+
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+
+                        }else {
+                            inputPhoneNo.setError(loginResponse.getMsg());
+                            inputPhoneNo.requestFocus();
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<LoginResponse> call, Throwable t) {
+                        System.out.println(t.getMessage());
+                    }
+                });
+            }else{
+                String phone_no = inputPhoneNo.getText().toString().trim();
+                SharedPrefManager.getInstance(LoginActivity.this).setLoginWith("mobile",phone_no);
+                Intent intent = new Intent(LoginActivity.this,ProfileActivity.class);
+                startActivity(intent);
+            }
+        }
+        return;
+    }
+
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    private void sendOTP(){
+        String phone_no = inputPhoneNo.getText().toString().trim();
+
+        if(phone_no.isEmpty()){
+            inputPhoneNo.setError("Required Phone Number");
+            inputPhoneNo.requestFocus();
+            return;
+        }
+
+        if(phone_no.length() != 10 ||
+                !(Character.getNumericValue(phone_no.charAt(0)) < 10 && Character.getNumericValue(phone_no.charAt(0)) > 5) ){
+            inputPhoneNo.setError("Required Valid Phone Number");
+            inputPhoneNo.requestFocus();
+            return;
+        }
+        inputPhoneNo.setEnabled(false);
+        btnSendOtp.setEnabled(false);
+        btnSendOtp.setText("Sending...");
+        inputPin.requestFocus();
+
+
+
+        Call<OtpResponse> call = RetrofitClient.getInstance().getApi().getOtp("+91"+phone_no);
+
+        call.enqueue(new Callback<OtpResponse>() {
             @Override
-            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+            public void onResponse(Call<OtpResponse> call, Response<OtpResponse> response) {
+                OtpResponse otpResponse = response.body();
+                if(!otpResponse.isErr()){
 
-                LoginResponse loginResponse = response.body();
+                    otpPin = otpResponse.getOtp();
+                    uid = otpResponse.getUid();
 
-                if(!loginResponse.isErr()){
-
-                    //save user in sheared preference.
-                    SharedPrefManager.getInstance(LoginActivity.this)
-                            .saveUser(loginResponse.getUser());
-
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-
-                }else {
-                    inputPassword.setError("Enter valid password");
-                    inputPassword.requestFocus();
+                }else{
+                    inputPhoneNo.setEnabled(true);
+                    btnSendOtp.setEnabled(true);
+                    btnSendOtp.setText("Send OTP");
+                    inputPhoneNo.setError("Sending Failed");
+                    inputPhoneNo.requestFocus();
+                    System.out.println(otpResponse.getMsg());
                 }
             }
 
             @Override
-            public void onFailure(Call<LoginResponse> call, Throwable t) {
-
+            public void onFailure(Call<OtpResponse> call, Throwable t) {
+                inputPhoneNo.setEnabled(true);
+                btnSendOtp.setEnabled(true);
+                btnSendOtp.setText("Send OTP");
+                inputPhoneNo.setError("Sending Failed");
+                inputPhoneNo.requestFocus();
+                System.out.println(t.getMessage());
             }
         });
 
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            if (account != null) {
+
+                Call<LoginResponse> call = RetrofitClient.getInstance().getApi().getUserbyemail(account.getId(),account.getEmail());
+
+                call.enqueue(new Callback<LoginResponse>() {
+                    @Override
+                    public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                        LoginResponse loginResponse = response.body();
+
+                        if(loginResponse.isErr()){
+                            SharedPrefManager.getInstance(LoginActivity.this).setLoginWith("google",account.getEmail());
+                            Intent intent = new Intent(LoginActivity.this,ProfileActivity.class);
+                            startActivity(intent);
+                        }else {
+
+                            //save user in sheared preference.
+                            SharedPrefManager.getInstance(LoginActivity.this)
+                                    .saveUser(loginResponse.getUser());
+
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<LoginResponse> call, Throwable t) {
+
+                    }
+                });
+            }
+
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w("Error", "signInResult:failed code=" + e.getStatusCode());
+        }
+    }
 }
