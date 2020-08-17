@@ -2,38 +2,40 @@ package com.ganesh.vendorapp.storage;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Patterns;
 
 import com.ganesh.vendorapp.models.User;
 
-public class SharedPrefManager {
+public class UsersSharedPrefManager {
 
-    private static final String SHARED_PREF_NAME = "my_shared_preff";
+    private static final String SHARED_PREF_NAME = "user_shared_preff";
 
-    private static SharedPrefManager mInstance;
+    private static UsersSharedPrefManager mInstance;
     private Context mCtx;
 
-    private SharedPrefManager(Context mCtx){
+    private UsersSharedPrefManager(Context mCtx){
         this.mCtx = mCtx;
     }
 
-    public static synchronized SharedPrefManager getInstance(Context mCtx) {
+    public static synchronized UsersSharedPrefManager getInstance(Context mCtx) {
         if(mInstance == null) {
-            mInstance = new SharedPrefManager(mCtx);
+            mInstance = new UsersSharedPrefManager(mCtx);
         }
         return mInstance;
     }
 
-    public void setLoginWith(String loginWith,String data) {
+    public void setLoginWith(String loginWith,String phoneNo) {
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("login_with", loginWith);
-        if(!Patterns.EMAIL_ADDRESS.matcher(data).matches()) {
-            editor.putString("phone_no", data);
-        }else{
-            editor.putString("email", data);
-        }
-
+        editor.putString("phone_no", phoneNo);
+        editor.apply();
+    }
+    public void setLoginWith(String loginWith,String email,String username) {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("login_with", loginWith);
+        editor.putString("email", email);
+        editor.putString("fullname",username);
         editor.apply();
     }
 

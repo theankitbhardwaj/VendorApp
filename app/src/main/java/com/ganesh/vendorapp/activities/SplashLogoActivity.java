@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.ganesh.vendorapp.R;
-import com.ganesh.vendorapp.storage.SharedPrefManager;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.ganesh.vendorapp.storage.UsersSharedPrefManager;
 
 public class SplashLogoActivity extends AppCompatActivity {
 
@@ -22,9 +20,9 @@ public class SplashLogoActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    sleep(1000);
+                    sleep(2000);
 
-                    if(SharedPrefManager.getInstance(getApplicationContext()).isLoggedIn()){
+                    if(UsersSharedPrefManager.getInstance(getApplicationContext()).isLoggedIn()){
                         Intent intent = new Intent(getApplicationContext(),MainActivity.class);
                         startActivity(intent);
                         finish();

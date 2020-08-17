@@ -2,24 +2,22 @@ package com.ganesh.vendorapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ShapeDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ganesh.vendorapp.R;
 import com.ganesh.vendorapp.api.RetrofitClient;
+import com.ganesh.vendorapp.models.LoadingDialog;
 import com.ganesh.vendorapp.models.LoginResponse;
 import com.ganesh.vendorapp.models.OtpResponse;
-import com.ganesh.vendorapp.storage.SharedPrefManager;
+import com.ganesh.vendorapp.storage.UsersSharedPrefManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -35,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText inputPhoneNo, inputPin;
     private Button btnLogin, btnSendOtp;
+    private LoadingDialog loadingDialog;
 
     private ImageView googleLogin, facebookLogin;
     private static final int RC_SIGN_IN = 1;
@@ -47,6 +46,18 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        findViewById(R.id.main_layout_login).setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if(b){
+                    InputMethodManager inputMethodManager = (InputMethodManager) LoginActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(), 0);
+                }
+            }
+        });
+
+        loadingDialog = new LoadingDialog(LoginActivity.this);
 
         inputPhoneNo=findViewById(R.id.inputPhoneNo);
         inputPin=findViewById(R.id.inputPin);
@@ -78,7 +89,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if(SharedPrefManager.getInstance(this).isLoggedIn()){
+        if(UsersSharedPrefManager.getInstance(this).isLoggedIn()){
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -103,19 +114,18 @@ public class LoginActivity extends AppCompatActivity {
         }else{
             if(uid != null){
 
+                loadingDialog.startLoadingDialog();
                 Call<LoginResponse> call = RetrofitClient.getInstance().getApi().getUser(uid);
-
-
                 call.enqueue(new Callback<LoginResponse>() {
                     @Override
                     public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-
+                        loadingDialog.dismissDialog();
                         LoginResponse loginResponse = response.body();
 
                         if(!loginResponse.isErr()){
 
                             //save user in sheared preference.
-                            SharedPrefManager.getInstance(LoginActivity.this)
+                            UsersSharedPrefManager.getInstance(LoginActivity.this)
                                     .saveUser(loginResponse.getUser());
 
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -136,7 +146,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }else{
                 String phone_no = inputPhoneNo.getText().toString().trim();
-                SharedPrefManager.getInstance(LoginActivity.this).setLoginWith("mobile",phone_no);
+                UsersSharedPrefManager.getInstance(LoginActivity.this).setLoginWith("mobile",phone_no);
                 Intent intent = new Intent(LoginActivity.this,ProfileActivity.class);
                 startActivity(intent);
             }
@@ -208,7 +218,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             // The Task returned from this call is always completed, no need to attach
@@ -225,21 +234,23 @@ public class LoginActivity extends AppCompatActivity {
             // Signed in successfully, show authenticated UI.
             if (account != null) {
 
+                loadingDialog.startLoadingDialog();
                 Call<LoginResponse> call = RetrofitClient.getInstance().getApi().getUserbyemail(account.getId(),account.getEmail());
 
                 call.enqueue(new Callback<LoginResponse>() {
                     @Override
                     public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                         LoginResponse loginResponse = response.body();
+                        loadingDialog.dismissDialog();
 
                         if(loginResponse.isErr()){
-                            SharedPrefManager.getInstance(LoginActivity.this).setLoginWith("google",account.getEmail());
+                            UsersSharedPrefManager.getInstance(LoginActivity.this).setLoginWith("google",account.getEmail(),account.getDisplayName());
                             Intent intent = new Intent(LoginActivity.this,ProfileActivity.class);
                             startActivity(intent);
                         }else {
 
                             //save user in sheared preference.
-                            SharedPrefManager.getInstance(LoginActivity.this)
+                            UsersSharedPrefManager.getInstance(LoginActivity.this)
                                     .saveUser(loginResponse.getUser());
 
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);

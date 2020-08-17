@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/item_delete"
+        android:title="Delete"
+        android:orderInCategory="2"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_delete"/>
+
+    <item android:id="@+id/item_search"
+        android:title="Search"
+        android:orderInCategory="1"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+
+    <item android:id="@+id/item_profile"
+        android:title="Profile"
+        android:orderInCategory="3"
+        app:showAsAction="never"
+        android:icon="@drawable/ic_profile"/>
+
+    <item android:id="@+id/item_about"
+        android:title="About"
+        android:orderInCategory="4"
+        app:showAsAction="never"
+        android:icon="@drawable/ic_info"/>
+
+    <item android:id="@+id/item_help"
+        android:title="Help"
+        app:showAsAction="never"
+        android:orderInCategory="5"
+        android:icon="@drawable/ic_help"/>
+
+    <item android:id="@+id/item_logout"
+        android:title="Logout"
+        app:showAsAction="never"
+        android:orderInCategory="6"
+        android:icon="@drawable/ic_logout"/>
+
+</menu>
