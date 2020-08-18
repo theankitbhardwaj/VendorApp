@@ -38,6 +38,15 @@ public class UsersSharedPrefManager {
         editor.putString("fullname",username);
         editor.apply();
     }
+    public void setLoginWith(String uid, String loginWith,String email,String username) {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("uid",uid);
+        editor.putString("login_with", loginWith);
+        editor.putString("email", email);
+        editor.putString("fullname",username);
+        editor.apply();
+    }
 
     public String LoginWith() {
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME,Context.MODE_PRIVATE);

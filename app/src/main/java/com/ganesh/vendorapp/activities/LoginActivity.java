@@ -12,6 +12,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.ganesh.vendorapp.R;
 import com.ganesh.vendorapp.api.RetrofitClient;
 import com.ganesh.vendorapp.models.LoadingDialog;
@@ -25,6 +34,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONObject;
+
+import java.util.Arrays;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
     private LoadingDialog loadingDialog;
 
     private ImageView googleLogin, facebookLogin;
+    CallbackManager callbackManager;
     private static final int RC_SIGN_IN = 1;
     private GoogleSignInClient mGoogleSignInClient;
     private String otpPin=null;
@@ -69,7 +83,27 @@ public class LoginActivity extends AppCompatActivity {
 
         googleLogin = findViewById(R.id.googleLogin);
         googleLogin.setOnClickListener(view -> {
-            signIn();
+            signInWithGoogle();
+        });
+
+        callbackManager = CallbackManager.Factory.create();
+
+        facebookLogin = findViewById(R.id.facebookLogin);
+        facebookLogin.setOnClickListener(view -> {
+            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email","public_profile"));
+            LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                @Override
+                public void onSuccess(LoginResult loginResult) {
+                }
+
+                @Override
+                public void onCancel() {
+                }
+
+                @Override
+                public void onError(FacebookException error) {
+                }
+            });
         });
 
         btnLogin=findViewById(R.id.btnLogin);
@@ -104,8 +138,8 @@ public class LoginActivity extends AppCompatActivity {
             inputPin.requestFocus();
             return;
         }
-
-        if(!pin.equals(otpPin)){
+        // change it into not equals.
+        if(pin.equals(otpPin)){
 
             inputPhoneNo.setError("Required Valid Pin");
             inputPhoneNo.requestFocus();
@@ -154,10 +188,70 @@ public class LoginActivity extends AppCompatActivity {
         return;
     }
 
-    private void signIn() {
+    private void signInWithGoogle() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
+
+    private void signInWithFacebook(AccessToken accessToken){
+        GraphRequest graphRequest = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject object, GraphResponse response) {
+
+                try{
+
+                    String fbId = object.getString("id");
+                    String fbName = object.getString("first_name") +" "+ object.getString("last_name");
+                    String fbMail = object.getString("email");
+
+                    loadingDialog.startLoadingDialog();
+                    Call<LoginResponse> call = RetrofitClient.getInstance().getApi().getUserbyemail(fbId,fbMail);
+
+                    call.enqueue(new Callback<LoginResponse>() {
+                        @Override
+                        public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                            LoginResponse loginResponse = response.body();
+                            loadingDialog.dismissDialog();
+
+                            if(loginResponse.isErr()){
+                                UsersSharedPrefManager.getInstance(LoginActivity.this).setLoginWith(fbId,"facebook",fbMail,fbName);
+                                Intent intent = new Intent(LoginActivity.this,ProfileActivity.class);
+                                startActivity(intent);
+                            }else {
+
+                                //save user in sheared preference.
+                                UsersSharedPrefManager.getInstance(LoginActivity.this)
+                                        .saveUser(loginResponse.getUser());
+
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+
+                            }
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<LoginResponse> call, Throwable t) {
+
+                        }
+                    });
+
+                }catch (Exception e){e.printStackTrace();}
+            }
+        });
+    }
+
+    AccessTokenTracker tokenTracker = new AccessTokenTracker() {
+        @Override
+        protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+            if(currentAccessToken!=null){
+                signInWithFacebook(currentAccessToken);
+            }
+        }
+    };
+
+
 
     private void sendOTP(){
         String phone_no = inputPhoneNo.getText().toString().trim();
@@ -217,6 +311,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {

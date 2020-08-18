@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ganesh.vendorapp.R;
+import com.ganesh.vendorapp.models.Products;
 import com.ganesh.vendorapp.models.Variants;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -67,16 +68,7 @@ public class AddProductActivity extends AppCompatActivity {
             return;
         }
         if(checkIfValidAndReadVariants()){
-
-//            Intent intent = new Intent(AddProductActivity.this,MainActivity.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//            Bundle bundle = new Bundle();
-//            bundle.putString("title",item_title);
-//            bundle.putString("company",item_company);
-//            bundle.putString("description",item_desc);
-//            bundle.putSerializable("variant_list",variantList);
-//            intent.putExtras(bundle);
-//            startActivity(intent);
+            new Products(item_title,item_company,item_desc,variantList);
         }
     }
 

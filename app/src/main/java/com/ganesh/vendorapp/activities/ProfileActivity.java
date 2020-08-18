@@ -60,6 +60,9 @@ public class ProfileActivity extends AppCompatActivity {
         User user = UsersSharedPrefManager.getInstance(ProfileActivity.this).getUser();
         if(user.getPhoneNo() != null) {
             inputPhoneNo.setText(user.getPhoneNo());
+            if(UsersSharedPrefManager.getInstance(ProfileActivity.this).LoginWith().equals("mobile")){
+                inputPhoneNo.setEnabled(false);
+            }
         }
 //        if(user.getEmail() != null) {
 //            inputEmail.setText(user.getEmail());
@@ -200,6 +203,47 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 });
 
+            }else if(loginWith.equals("facebook")){
+
+                User user = UsersSharedPrefManager.getInstance(ProfileActivity.this).getUser();
+                if(user.getUid()!=null){
+                    loadingDialog.startLoadingDialog();
+                    /* Do user registration using the api call */
+                    Call<DefaultResponse> call = RetrofitClient
+                            .getInstance()
+                            .getApi()
+                            .createUser(user.getUid(),fullname,phone_no,user.getEmail(),loginWith);
+
+                    call.enqueue(new Callback<DefaultResponse>() {
+                        @Override
+                        public void onResponse(Call<DefaultResponse> call, Response<DefaultResponse> response) {
+                            DefaultResponse defaultResponse = response.body();
+                            loadingDialog.dismissDialog();
+                            if(defaultResponse != null) {
+                                if (!defaultResponse.isErr()) {
+
+                                    //save user in sheared preference.
+                                    UsersSharedPrefManager.getInstance(ProfileActivity.this)
+                                            .saveUser(new User(user.getUid(), fullname, phone_no, user.getEmail()));
+
+                                    Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+
+                                } else {
+                                    Toast.makeText(ProfileActivity.this, "User ID already exist", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            inputPhoneNo.setError("Phone No is already Register, try to mobile login or another no.");
+                            inputPhoneNo.requestFocus();
+                        }
+
+                        @Override
+                        public void onFailure(Call<DefaultResponse> call, Throwable t) {
+                            Toast.makeText(ProfileActivity.this, "error", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
         }
 
