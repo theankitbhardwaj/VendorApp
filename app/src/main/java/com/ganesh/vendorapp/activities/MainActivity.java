@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,7 +13,6 @@ import com.ganesh.vendorapp.R;
 import com.ganesh.vendorapp.fragments.OutOfStockFragment;
 import com.ganesh.vendorapp.fragments.ProductFragment;
 import com.ganesh.vendorapp.models.User;
-import com.ganesh.vendorapp.storage.ProductDbHelper;
 import com.ganesh.vendorapp.storage.UsersSharedPrefManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -24,7 +22,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     private GoogleSignInClient mGoogleSignInClient;
 
@@ -33,13 +31,14 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ProductDbHelper productDbHelper = new ProductDbHelper(this);
-        SQLiteDatabase database = productDbHelper.getReadableDatabase();
+        /*ProductDbHelper productDbHelper = new ProductDbHelper(this);
+        SQLiteDatabase database = productDbHelper.getReadableDatabase();*/
+
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.nav_view);
         User user = UsersSharedPrefManager.getInstance(this).getUser();
 
-        getSupportActionBar().setTitle("Welcome "+ user.getFullName().split(" ",2)[0]);
+        getSupportActionBar().setTitle("Welcome " + user.getFullName().split(" ", 2)[0]);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -48,23 +47,22 @@ public class MainActivity extends AppCompatActivity{
 
         FloatingActionButton addProducts = findViewById(R.id.add_product_item);
         addProducts.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this,AddProductActivity.class);
+            Intent intent = new Intent(MainActivity.this, AddProductActivity.class);
             startActivity(intent);
         });
 
         ProductFragment productFragment = new ProductFragment();
         if (getIntent().getExtras() != null) {
             productFragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(R.id.container_fragment,productFragment).commit();
-        }else{
-            getSupportFragmentManager().beginTransaction().add(R.id.container_fragment,productFragment).commit();
         }
+        getSupportFragmentManager().beginTransaction().add(R.id.container_fragment, productFragment).commit();
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             Fragment selectedFragment = null;
+
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
 
                     case R.id.item_stock:
                         selectedFragment = new OutOfStockFragment();
@@ -75,7 +73,7 @@ public class MainActivity extends AppCompatActivity{
                         break;
                     default:
                 }
-                getSupportFragmentManager().beginTransaction().replace(R.id.container_fragment,selectedFragment).commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.container_fragment, selectedFragment).commit();
                 return true;
             }
         });
@@ -85,33 +83,30 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.option_menu,menu);
+        getMenuInflater().inflate(R.menu.option_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
 
             case R.id.item_logout:
                 logOut();
                 break;
 
             case R.id.item_about:
-                break;
 
             case R.id.item_help:
-                break;
 
             case R.id.item_delete:
-                break;
 
             case R.id.item_search:
                 break;
 
             case R.id.item_profile:
-                Intent intent = new Intent(MainActivity.this,ProfileActivity.class);
+                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
                 startActivity(intent);
                 break;
 
@@ -120,7 +115,7 @@ public class MainActivity extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
-    private void logOut(){
+    private void logOut() {
 
         UsersSharedPrefManager.getInstance(getApplicationContext())
                 .clear();
@@ -146,9 +141,8 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onStart() {
         super.onStart();
-        if(!UsersSharedPrefManager.getInstance(this).isLoggedIn()){
+        if (!UsersSharedPrefManager.getInstance(this).isLoggedIn()) {
             logOut();
         }
-
     }
 }

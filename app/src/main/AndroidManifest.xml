@@ -31,7 +31,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.AddProductActivity"></activity>
+        <activity android:name=".activities.AddProductActivity"/>
         <activity
             android:name=".activities.SplashLogoActivity"
             android:theme="@style/AppTheme.NoActionBar">

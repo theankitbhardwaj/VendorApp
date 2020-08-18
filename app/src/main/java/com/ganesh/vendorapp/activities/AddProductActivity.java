@@ -2,6 +2,7 @@ package com.ganesh.vendorapp.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -14,8 +15,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ganesh.vendorapp.R;
-import com.ganesh.vendorapp.models.Products;
 import com.ganesh.vendorapp.models.Variants;
+import com.ganesh.vendorapp.storage.ProductRoom;
+import com.ganesh.vendorapp.viewmodel.ProductViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
@@ -25,7 +27,9 @@ public class AddProductActivity extends AppCompatActivity {
     private LinearLayout variantLayoutList;
     private TextView tv_counter_variant;
     private ArrayList<Variants> variantList = new ArrayList<>();
-    private TextInputEditText et_item_title, et_item_company,et_item_desc;
+    private TextInputEditText et_item_title, et_item_company, et_item_desc;
+    private ProductRoom productRoom;
+    private ProductViewModel productViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,18 +42,21 @@ public class AddProductActivity extends AppCompatActivity {
         et_item_company = findViewById(R.id.et_item_company);
         et_item_desc = findViewById(R.id.et_item_desc);
 
-        findViewById(R.id.main_layout_add_product).setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if(b){
-                    InputMethodManager inputMethodManager = (InputMethodManager) AddProductActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
-                    inputMethodManager.hideSoftInputFromWindow(AddProductActivity.this.getCurrentFocus().getWindowToken(), 0);
-                }
+
+
+        productViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
+
+        findViewById(R.id.main_layout_add_product).setOnFocusChangeListener((view, b) -> {
+            if (b) {
+                InputMethodManager inputMethodManager = (InputMethodManager) AddProductActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(AddProductActivity.this.getCurrentFocus().getWindowToken(), 0);
             }
         });
 
         tv_counter_variant = findViewById(R.id.tv_count_variant);
         variantLayoutList = findViewById(R.id.add_variant_list);
+
+
 
         findViewById(R.id.add_variant_btn).setOnClickListener(view -> {
             addView();
@@ -57,33 +64,42 @@ public class AddProductActivity extends AppCompatActivity {
 
     }
 
-    private void saveProductItem(){
+    private void saveProductItem() {
         String item_title = et_item_title.getText().toString().trim();
         String item_company = et_item_company.getText().toString().trim();
         String item_desc = et_item_desc.getText().toString().trim();
 
-        if(item_title.isEmpty()){
+        if (item_title.isEmpty()) {
             et_item_title.setError("Required Pin No.");
             et_item_title.requestFocus();
             return;
         }
-        if(checkIfValidAndReadVariants()){
-            new Products(item_title,item_company,item_desc,variantList);
+
+        if (checkIfValidAndReadVariants()) {
+
+            productRoom = new ProductRoom();
+            productRoom.title = item_title;
+            productRoom.company = item_company;
+            productRoom.description = item_desc;
+            productRoom.variants = variantList;
+
+            productViewModel.insert(productRoom);
+
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.save_menu,menu);
+        getMenuInflater().inflate(R.menu.save_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId() == R.id.save_product_btn){
+        if (item.getItemId() == R.id.save_product_btn) {
             saveProductItem();
         }
-        if(item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
@@ -93,38 +109,38 @@ public class AddProductActivity extends AppCompatActivity {
         variantList.clear();
         boolean result = true;
 
-        for(int i=0; i<variantLayoutList.getChildCount(); i++){
+        for (int i = 0; i < variantLayoutList.getChildCount(); i++) {
 
             View variantView = variantLayoutList.getChildAt(i);
             TextInputEditText et_variant_name = variantView.findViewById(R.id.et_variant_name);
             TextInputEditText et_variant_quantity = variantView.findViewById(R.id.et_variant_quantity);
             TextInputEditText et_variant_price = variantView.findViewById(R.id.et_variant_price);
 
-            if(et_variant_name.getText().toString().trim().equals("")){
+            if (et_variant_name.getText().toString().trim().equals("")) {
                 result = false;
                 break;
             }
 
-            if(et_variant_quantity.getText().toString().trim().equals("") ||
-                    Integer.parseInt(et_variant_quantity.getText().toString().trim())<1){
+            if (et_variant_quantity.getText().toString().trim().equals("") ||
+                    Integer.parseInt(et_variant_quantity.getText().toString().trim()) < 1) {
                 result = false;
                 break;
             }
 
-            if(et_variant_price.getText().toString().trim().equals("") ||
-                    Integer.parseInt(et_variant_price.getText().toString().trim())<1){
+            if (et_variant_price.getText().toString().trim().equals("") ||
+                    Integer.parseInt(et_variant_price.getText().toString().trim()) < 1) {
                 result = false;
                 break;
             }
 
-            variantList.add( new Variants(
-                    et_variant_name.getText().toString() ,
-                    Integer.parseInt(et_variant_quantity.getText().toString()) ,
-                    Double.parseDouble(et_variant_price.getText().toString())
+            variantList.add(new Variants(
+                            et_variant_name.getText().toString(),
+                            Integer.parseInt(et_variant_quantity.getText().toString()),
+                            Double.parseDouble(et_variant_price.getText().toString())
                     )
             );
         }
-        if(variantList.size() == 0){
+        if (variantList.size() == 0) {
             result = false;
             Toast.makeText(this, "Add Variant First!", Toast.LENGTH_SHORT).show();
         } else if (!result) {
@@ -139,19 +155,23 @@ public class AddProductActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private void addView(){
-        View variantView = getLayoutInflater().inflate(R.layout.row_add_variant,null,false);
+    private void addView() {
+        View variantView = getLayoutInflater().inflate(R.layout.row_add_variant, null, false);
 
         variantView.findViewById(R.id.close_imageButton).setOnClickListener(view -> {
             removeView(variantView);
         });
 
         variantLayoutList.addView(variantView);
-        tv_counter_variant.setText(variantLayoutList.getChildCount()+"");
+        tv_counter_variant.setText(variantLayoutList.getChildCount() + "");
     }
 
-    private void removeView(View view){
+    private void removeView(View view) {
         variantLayoutList.removeView(view);
-        tv_counter_variant.setText(variantLayoutList.getChildCount()+"");
+        tv_counter_variant.setText(variantLayoutList.getChildCount() + "");
     }
+
+
 }
+
+

@@ -2,17 +2,18 @@ package com.ganesh.vendorapp.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Products implements Serializable{
     private String title;
     private String company;
     private String description;
-    private ArrayList<Variants> variants;
+    private List<Variants> variants;
 
     public Products() {
     }
 
-    public Products(String title, String company, String description, ArrayList<Variants> variants) {
+    public Products(String title, String company, String description, List<Variants> variants) {
         this.title = title;
         this.company = company;
         this.description = description;
@@ -43,7 +44,7 @@ public class Products implements Serializable{
         this.description = description;
     }
 
-    public ArrayList<Variants> getVariants() {
+    public List<Variants> getVariants() {
         return variants;
     }
 

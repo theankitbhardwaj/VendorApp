@@ -16,26 +16,24 @@ public class SplashLogoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash_logo);
 
 
-        Thread thread = new Thread(){
+        Thread thread = new Thread() {
             @Override
             public void run() {
                 try {
                     sleep(2000);
 
-                    if(UsersSharedPrefManager.getInstance(getApplicationContext()).isLoggedIn()){
-                        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                    if (UsersSharedPrefManager.getInstance(getApplicationContext()).isLoggedIn()) {
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                         startActivity(intent);
                         finish();
                     }
-                    else{
-                        Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
 
 
-
-                }catch (InterruptedException e){
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 super.run();
