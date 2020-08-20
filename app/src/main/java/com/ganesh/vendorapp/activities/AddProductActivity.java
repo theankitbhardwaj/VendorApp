@@ -15,12 +15,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ganesh.vendorapp.R;
+import com.ganesh.vendorapp.api.RetrofitClient;
+import com.ganesh.vendorapp.models.DefaultResponse;
+import com.ganesh.vendorapp.models.LoadingDialog;
+import com.ganesh.vendorapp.models.LoginResponse;
+import com.ganesh.vendorapp.models.Products;
 import com.ganesh.vendorapp.models.Variants;
 import com.ganesh.vendorapp.storage.ProductRoom;
+import com.ganesh.vendorapp.storage.UsersSharedPrefManager;
 import com.ganesh.vendorapp.viewmodel.ProductViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AddProductActivity extends AppCompatActivity {
 
@@ -41,7 +51,6 @@ public class AddProductActivity extends AppCompatActivity {
         et_item_title = findViewById(R.id.et_item_title);
         et_item_company = findViewById(R.id.et_item_company);
         et_item_desc = findViewById(R.id.et_item_desc);
-
 
 
         productViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
@@ -82,8 +91,11 @@ public class AddProductActivity extends AppCompatActivity {
             productRoom.company = item_company;
             productRoom.description = item_desc;
             productRoom.variants = variantList;
-
             productViewModel.insert(productRoom);
+
+
+
+            finish();
 
         }
     }
