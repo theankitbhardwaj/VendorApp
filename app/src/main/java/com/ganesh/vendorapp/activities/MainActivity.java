@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.nav_view);
         User user = UsersSharedPrefManager.getInstance(this).getUser();
 
-        getSupportActionBar().setTitle("Welcome " + user.getFullName().split(" ", 2)[0]);
+       getSupportActionBar().setTitle("Welcome " + user.getFullName().split(" ", 2)[0]);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()

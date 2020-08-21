@@ -25,7 +25,7 @@ import com.ganesh.vendorapp.models.ProductsResponse;
 import com.ganesh.vendorapp.models.SaveResponse;
 import com.ganesh.vendorapp.storage.ProductRoom;
 import com.ganesh.vendorapp.storage.UsersSharedPrefManager;
-import com.ganesh.vendorapp.utils.RandomID;
+import com.ganesh.vendorapp.utils.Helper;
 import com.ganesh.vendorapp.viewmodel.ProductViewModel;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class ProductFragment extends Fragment {
     public ProductViewModel productViewModel;
     private ProductsAdapter productsAdapter;
     private APIs api;
-    private RandomID randomID;
+    private Helper helper;
 
     @Nullable
     @Override
@@ -61,7 +61,7 @@ public class ProductFragment extends Fragment {
         recyclerViewProducts.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
 
         api = RetrofitClient.getInstance().getApi();
-        randomID = new RandomID();
+        helper = new Helper();
 
         api.getProducts(UsersSharedPrefManager.getInstance(getContext()).getUid())
                 .enqueue(new Callback<ProductsResponse>() {

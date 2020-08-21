@@ -24,24 +24,15 @@ import android.widget.Toast;
 
 import com.ganesh.vendorapp.R;
 import com.ganesh.vendorapp.adapters.ImageAdapter;
-import com.ganesh.vendorapp.api.RetrofitClient;
-import com.ganesh.vendorapp.models.DefaultResponse;
-import com.ganesh.vendorapp.models.LoadingDialog;
-import com.ganesh.vendorapp.models.LoginResponse;
-import com.ganesh.vendorapp.models.Products;
 import com.ganesh.vendorapp.models.Variants;
 import com.ganesh.vendorapp.storage.ProductRoom;
 import com.ganesh.vendorapp.storage.UsersSharedPrefManager;
-import com.ganesh.vendorapp.utils.RandomID;
+import com.ganesh.vendorapp.utils.Helper;
 import com.ganesh.vendorapp.viewmodel.ProductViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class AddProductActivity extends AppCompatActivity {
 
@@ -56,7 +47,7 @@ public class AddProductActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 103;
     private static final int STORAGE_PERMISSION = 105;
     private ImageAdapter imageAdapter;
-    private RandomID randomID;
+    private Helper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +61,7 @@ public class AddProductActivity extends AppCompatActivity {
         et_item_desc = findViewById(R.id.et_item_desc);
         images = new ArrayList<>();
         tempImages = new ArrayList<>();
-        randomID = new RandomID();
+        helper = new Helper();
 
         productViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
 
@@ -112,7 +103,7 @@ public class AddProductActivity extends AppCompatActivity {
 
         if (checkIfValidAndReadVariants()) {
             productRoom = new ProductRoom();
-            productRoom.productId = randomID.getRandomID();
+            productRoom.productId = helper.getRandomID();
             productRoom.userId = UsersSharedPrefManager.getInstance(this).getUid();
             productRoom.title = item_title;
             productRoom.company = item_company;
@@ -185,12 +176,12 @@ public class AddProductActivity extends AppCompatActivity {
                 result = false;
                 break;
             }
-
+            UsersSharedPrefManager.getInstance(this).temp(helper.base64String(tempImages.get(i), this).get(0));
             variantList.add(new Variants(
                     et_variant_name.getText().toString(),
                     Integer.parseInt(et_variant_quantity.getText().toString()),
                     Double.parseDouble(et_variant_price.getText().toString()),
-                    tempImages.get(i)));
+                    helper.base64String(tempImages.get(i), this)));
 
         }
         if (variantList.size() == 0) {

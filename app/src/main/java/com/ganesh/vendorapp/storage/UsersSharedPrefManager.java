@@ -115,4 +115,11 @@ public class UsersSharedPrefManager {
         editor.apply();
     }
 
+    public void temp(String string) {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("base64", string);
+        editor.apply();
+    }
+
 }
