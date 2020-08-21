@@ -6,12 +6,23 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Products implements Serializable{
+public class Products implements Serializable {
 
     private String product_id;
     private String uid;
     private String title;
     private String company;
+    private String description;
+    private List<Variants> variants;
+
+    public Products(String product_id, String uid, String title, String company, String description, List<Variants> variants) {
+        this.product_id = product_id;
+        this.uid = uid;
+        this.title = title;
+        this.company = company;
+        this.description = description;
+        this.variants = variants;
+    }
 
     public String getProduct_id() {
         return product_id;
@@ -25,30 +36,8 @@ public class Products implements Serializable{
         return uid;
     }
 
-    private String description;
-    private List<Variants> variants;
-
-    public Products(String product_id, String uid, String title, String company, String description, List<Variants> variants) {
-        this.product_id = product_id;
-        this.uid = uid;
-        this.title = title;
-        this.company = company;
-        this.description = description;
-        this.variants = variants;
-    }
-
     public void setUid(String uid) {
         this.uid = uid;
-    }
-
-    public Products() {
-    }
-
-    public Products(String title, String company, String description, List<Variants> variants) {
-        this.title = title;
-        this.company = company;
-        this.description = description;
-        this.variants = variants;
     }
 
     public String getTitle() {
@@ -81,5 +70,17 @@ public class Products implements Serializable{
 
     public void setVariants(ArrayList<Variants> variants) {
         this.variants = variants;
+    }
+
+    @Override
+    public String toString() {
+        return "Products{" +
+                "product_id='" + product_id + '\'' +
+                ", uid='" + uid + '\'' +
+                ", title='" + title + '\'' +
+                ", company='" + company + '\'' +
+                ", description='" + description + '\'' +
+                ", variants=" + variants +
+                '}';
     }
 }
