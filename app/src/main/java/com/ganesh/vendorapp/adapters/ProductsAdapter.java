@@ -49,12 +49,12 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Produc
         ProductsItem products = differ.getCurrentList().get(position);
         holder.tv_item_title.setText(products.getTitle());
         holder.tv_item_company.setText(products.getCompany());
-       /* holder.tv_item_color_variant.setText(products.getVariants().size() + "");
+        holder.tv_item_color_variant.setText(products.getVariants().size() + "");
         holder.tv_item_price.setText(products.getVariants().get(0).getPrice() + "");
 
         Glide.with(holder.context)
-                .load(products.getVariants().get(0).getImage().get(0))
-                .into(holder.view);*/
+                .load(products.getVariants().get(0).getImage())
+                .into(holder.view);
     }
 
     @Override

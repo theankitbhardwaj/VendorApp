@@ -1,10 +1,13 @@
 package com.ganesh.vendorapp.models;
 
+import java.util.List;
+
 public class ProductsItem{
 	private String productId;
 	private String description;
 	private String company;
 	private String title;
+	private List<VariantsItem> variants;
 
 	public void setProductId(String productId){
 		this.productId = productId;
@@ -38,6 +41,14 @@ public class ProductsItem{
 		return title;
 	}
 
+	public void setVariants(List<VariantsItem> variants){
+		this.variants = variants;
+	}
+
+	public List<VariantsItem> getVariants(){
+		return variants;
+	}
+
 	@Override
  	public String toString(){
 		return 
@@ -46,6 +57,7 @@ public class ProductsItem{
 			",description = '" + description + '\'' + 
 			",company = '" + company + '\'' + 
 			",title = '" + title + '\'' + 
+			",variants = '" + variants + '\'' + 
 			"}";
 		}
 }
