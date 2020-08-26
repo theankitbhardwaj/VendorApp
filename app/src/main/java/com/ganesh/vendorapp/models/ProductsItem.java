@@ -9,9 +9,18 @@ public class ProductsItem{
 	private String title;
 	private List<VariantsItem> variants;
 
+	public ProductsItem(String productId, String description, String company, String title, List<VariantsItem> variants) {
+		this.productId = productId;
+		this.description = description;
+		this.company = company;
+		this.title = title;
+		this.variants = variants;
+	}
+
 	public void setProductId(String productId){
 		this.productId = productId;
 	}
+
 
 	public String getProductId(){
 		return productId;

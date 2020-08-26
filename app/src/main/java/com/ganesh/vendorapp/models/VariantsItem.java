@@ -1,17 +1,19 @@
 package com.ganesh.vendorapp.models;
 
+import java.util.List;
+
 public class VariantsItem{
-	private String image;
+	private List<String> image;
 	private int variantId;
 	private int quantity;
 	private int price;
 	private String variantName;
 
-	public void setImage(String image){
+	public void setImage(List<String> image){
 		this.image = image;
 	}
 
-	public String getImage(){
+	public List<String> getImage(){
 		return image;
 	}
 

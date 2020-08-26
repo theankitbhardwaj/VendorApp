@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         FloatingActionButton addProducts = findViewById(R.id.add_product_item);
         addProducts.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, AddProductActivity.class);
+            Intent intent = new Intent(MainActivity.this, AddProduct2.class);
             startActivity(intent);
         });
 

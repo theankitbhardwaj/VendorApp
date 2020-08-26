@@ -17,7 +17,6 @@ import java.util.List;
 public class ProductViewModel extends AndroidViewModel {
 
     private String TAG = this.getClass().getSimpleName();
-
     private ProductDao productDao;
     private AppDatabase appDatabase;
     private LiveData<List<ProductRoom>> productList;

@@ -104,7 +104,7 @@ public class AddProductActivity extends AppCompatActivity {
         if (checkIfValidAndReadVariants()) {
             productRoom = new ProductRoom();
             productRoom.productId = helper.getRandomID();
-            productRoom.userId = UsersSharedPrefManager.getInstance(this).getUid();
+            productRoom.userId = "11254";
             productRoom.title = item_title;
             productRoom.company = item_company;
             productRoom.description = item_desc;
@@ -116,8 +116,8 @@ public class AddProductActivity extends AppCompatActivity {
     }
 
     private void addView() {
-        View variantView = getLayoutInflater().inflate(R.layout.row_add_variant, null, false);
-        RecyclerView recyclerView = variantView.findViewById(R.id.imageRecycler);
+       /* View variantView = getLayoutInflater().inflate(R.layout.row_add_variant, null, false);
+//        RecyclerView recyclerView = variantView.findViewById(R.id.imageRecycler);
 
         tempImages.add(variantLayoutList.getChildCount(), new ArrayList<>());
         variantLayoutList.addView(variantView);
@@ -140,11 +140,11 @@ public class AddProductActivity extends AppCompatActivity {
 
         });
 
-        tv_counter_variant.setText(variantLayoutList.getChildCount() + "");
+        tv_counter_variant.setText(variantLayoutList.getChildCount() + "");*/
     }
 
     private void removeView(View view) {
-        tempImages.remove(variantLayoutList.getChildCount() + 1);
+
         variantLayoutList.removeView(view);
         tv_counter_variant.setText(variantLayoutList.getChildCount() + "");
     }
@@ -181,7 +181,7 @@ public class AddProductActivity extends AppCompatActivity {
                     et_variant_name.getText().toString(),
                     Integer.parseInt(et_variant_quantity.getText().toString()),
                     Double.parseDouble(et_variant_price.getText().toString()),
-                    helper.base64String(tempImages.get(i), this)));
+                    tempImages.get(i)));
 
         }
         if (variantList.size() == 0) {

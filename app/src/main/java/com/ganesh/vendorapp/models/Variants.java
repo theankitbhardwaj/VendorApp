@@ -10,6 +10,9 @@ public class Variants implements Serializable {
     private double price;
     private List<String> image;
 
+    public Variants() {
+    }
+
     public Variants(String variant_name, int quantity, double price, List<String> image) {
         this.variant_name = variant_name;
         this.quantity = quantity;
@@ -49,8 +52,6 @@ public class Variants implements Serializable {
         this.price = price;
     }
 
-    public Variants() {
-    }
 
     @Override
     public String toString() {
