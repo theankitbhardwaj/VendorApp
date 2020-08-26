@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         FloatingActionButton addProducts = findViewById(R.id.add_product_item);
         addProducts.setOnClickListener(view -> {
-            Intent intent = new Intent(MainActivity.this, AddProduct2.class);
+            Intent intent = new Intent(MainActivity.this, AddProductActivity.class);
             startActivity(intent);
         });
 
@@ -96,8 +96,6 @@ public class MainActivity extends AppCompatActivity {
                 logOut();
                 break;
 
-            case R.id.item_about:
-
             case R.id.item_help:
 
             case R.id.item_delete:
@@ -125,13 +123,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void signOut() {
         mGoogleSignInClient.signOut()
-                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                    }
+                .addOnCompleteListener(this, task -> {
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
                 });
         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

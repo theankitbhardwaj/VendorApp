@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ganesh.vendorapp.R;
-import com.ganesh.vendorapp.activities.AddProduct2;
+import com.ganesh.vendorapp.activities.AddProductActivity;
 import com.ganesh.vendorapp.models.Variants;
 
 import java.util.List;
@@ -26,11 +26,7 @@ public class VariantAdapter extends RecyclerView.Adapter<VariantAdapter.ViewHold
 
     List<Variants> variantsList;
     Context context;
-    List<Uri> imageData;
 
-    public VariantAdapter(List<Uri> imageData) {
-        this.imageData = imageData;
-    }
 
     public VariantAdapter(List<Variants> variantsList, Context context) {
         this.variantsList = variantsList;
@@ -51,8 +47,9 @@ public class VariantAdapter extends RecyclerView.Adapter<VariantAdapter.ViewHold
         });
 
         holder.addImage.setOnClickListener(view -> {
-            ((AddProduct2) context).getImage(position);
+            ((AddProductActivity) context).getImage(position);
         });
+
 
         holder.close1.setOnClickListener(view -> {
             variantsList.get(position).getImage().remove(0);
@@ -227,9 +224,7 @@ public class VariantAdapter extends RecyclerView.Adapter<VariantAdapter.ViewHold
                     .into(holder.image5);
         }
 
-
     }
-
     public void removeAt(int position) {
         variantsList.remove(position);
         notifyItemRemoved(position);
@@ -289,7 +284,6 @@ public class VariantAdapter extends RecyclerView.Adapter<VariantAdapter.ViewHold
 
                 }
             });
-
             variantPrice.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -300,7 +294,11 @@ public class VariantAdapter extends RecyclerView.Adapter<VariantAdapter.ViewHold
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                     Variants variants = variantsList.get(getAdapterPosition());
                     String price = charSequence + "";
-                    variants.setPrice(Integer.parseInt(price));
+                    if (!price.equals("")) {
+                        variants.setPrice(Double.parseDouble(price));
+                    } else {
+                        variants.setPrice(0);
+                    }
                     variantsList.set(getAdapterPosition(), variants);
                 }
 
@@ -319,7 +317,11 @@ public class VariantAdapter extends RecyclerView.Adapter<VariantAdapter.ViewHold
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                     Variants variants = variantsList.get(getAdapterPosition());
                     String quantity = charSequence + "";
-                    variants.setQuantity(Integer.parseInt(quantity));
+                    if (!quantity.equals("")) {
+                        variants.setQuantity(Integer.parseInt(quantity));
+                    } else {
+                        variants.setQuantity(0);
+                    }
                     variantsList.set(getAdapterPosition(), variants);
                 }
 

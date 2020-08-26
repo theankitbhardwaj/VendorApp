@@ -60,9 +60,13 @@ public class ProfileActivity extends AppCompatActivity {
         User user = UsersSharedPrefManager.getInstance(ProfileActivity.this).getUser();
         if (user.getPhoneNo() != null) {
             inputPhoneNo.setText(user.getPhoneNo());
-            if (UsersSharedPrefManager.getInstance(ProfileActivity.this).LoginWith().equals("mobile")) {
-                inputPhoneNo.setEnabled(false);
-            }
+            if (UsersSharedPrefManager.getInstance(ProfileActivity.this).LoginWith() != null) {
+                if (UsersSharedPrefManager.getInstance(ProfileActivity.this).LoginWith().equals("mobile")) {
+                    inputPhoneNo.setEnabled(false);
+                }
+            } else
+                inputPhoneNo.setEnabled(true);
+
         }
 //        if(user.getEmail() != null) {
 //            inputEmail.setText(user.getEmail());

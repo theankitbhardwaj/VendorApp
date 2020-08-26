@@ -16,8 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.ProductActivity"></activity>
-        <activity android:name=".activities.AddProduct2" />
+        <activity android:name=".activities.ProductDetailActivity"></activity>
+        <activity android:name=".activities.ProductActivity" />
+        <activity android:name=".activities.AddProductActivity" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -39,7 +40,7 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.AddProductActivity" />
+        <activity android:name=".activities.EditProductActivity" />
         <activity
             android:name=".activities.SplashLogoActivity"
             android:theme="@style/AppTheme.NoActionBar">

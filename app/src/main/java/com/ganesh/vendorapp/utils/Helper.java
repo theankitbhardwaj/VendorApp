@@ -6,6 +6,9 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Base64;
 
+import com.ganesh.vendorapp.models.Variants;
+import com.ganesh.vendorapp.models.VariantsItem;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,10 +41,10 @@ public class Helper {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         List<String> base64 = new ArrayList<>();
         for (int i = 0; i < uri.size(); i++) {
-            Bitmap bitmap = null;
+            Bitmap bitmap;
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), Uri.parse(uri.get(i)));
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream);
                 byte[] imgByte = byteArrayOutputStream.toByteArray();
                 base64.add(Base64.encodeToString(imgByte, Base64.DEFAULT));
             } catch (IOException e) {
@@ -50,6 +53,31 @@ public class Helper {
         }
         return base64;
     }
+    public boolean validateVariantData(Variants variants) {
+        if (variants != null) {
+            if (variants.getVariant_name() == null)
+                return false;
+            else if (String.valueOf(variants.getQuantity()) == null)
+                return false;
+            else if (String.valueOf(variants.getPrice()) == null)
+                return false;
+            else return variants.getImage() != null;
+        } else
+            return false;
+    }
+    public boolean validateVariantData(VariantsItem variants) {
+        if (variants != null) {
+            if (variants.getVariantName() == null)
+                return false;
+            else if (String.valueOf(variants.getQuantity()) == null)
+                return false;
+            else if (String.valueOf(variants.getPrice()) == null)
+                return false;
+            else return variants.getImage() != null;
+        } else
+            return false;
+    }
+
 
 
 }

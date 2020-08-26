@@ -7,6 +7,7 @@ import com.ganesh.vendorapp.models.Products;
 import com.ganesh.vendorapp.models.ProductsResponse;
 import com.ganesh.vendorapp.models.SaveResponse;
 
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
@@ -61,8 +62,25 @@ public interface APIs {
 
     );
 
+    @FormUrlEncoded
+    @POST("vendor/updateproduct")
+    Call<SaveResponse> updateProduct(
+            @Field("company") String company,
+            @Field("description") String description,
+            @Field("product_id") String productID,
+            @Field("title") String title,
+            @Field("uid") String uid,
+            @Field("variants") String variants
+
+    );
+
+
+
     @GET("vendor/products/{uid}")
     Call<ProductsResponse> getProducts(@Path("uid") String uid);
+
+    @GET("vendor/deleteproduct/{productId}")
+    Call<SaveResponse> deleteProduct(@Path("productId") String productId);
 
 
 }

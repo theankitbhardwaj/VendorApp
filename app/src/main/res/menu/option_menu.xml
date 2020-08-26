@@ -21,8 +21,8 @@
         app:showAsAction="never"
         android:icon="@drawable/ic_profile"/>
 
-    <item android:id="@+id/item_about"
-        android:title="About"
+    <item android:id="@+id/item_save"
+        android:title="Save to server"
         android:orderInCategory="4"
         app:showAsAction="never"
         android:icon="@drawable/ic_info"/>

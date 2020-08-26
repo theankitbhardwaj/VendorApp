@@ -68,7 +68,7 @@ public class Products implements Serializable {
         return variants;
     }
 
-    public void setVariants(ArrayList<Variants> variants) {
+    public void setVariants(List<Variants> variants) {
         this.variants = variants;
     }
 

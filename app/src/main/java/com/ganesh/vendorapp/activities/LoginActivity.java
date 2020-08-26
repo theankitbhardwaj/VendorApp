@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
     CallbackManager callbackManager;
     private static final int RC_SIGN_IN = 1;
     private GoogleSignInClient mGoogleSignInClient;
-    private String otpPin=null;
+    private String otpPin = null;
     private String uid = null;
 
 
@@ -64,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
         findViewById(R.id.main_layout_login).setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
-                if(b){
+                if (b) {
                     InputMethodManager inputMethodManager = (InputMethodManager) LoginActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
                     inputMethodManager.hideSoftInputFromWindow(LoginActivity.this.getCurrentFocus().getWindowToken(), 0);
                 }
@@ -73,8 +73,8 @@ public class LoginActivity extends AppCompatActivity {
 
         loadingDialog = new LoadingDialog(LoginActivity.this);
 
-        inputPhoneNo=findViewById(R.id.inputPhoneNo);
-        inputPin=findViewById(R.id.inputPin);
+        inputPhoneNo = findViewById(R.id.inputPhoneNo);
+        inputPin = findViewById(R.id.inputPin);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -90,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
 
         facebookLogin = findViewById(R.id.facebookLogin);
         facebookLogin.setOnClickListener(view -> {
-            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email","public_profile"));
+            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
             LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                 @Override
                 public void onSuccess(LoginResult loginResult) {
@@ -106,12 +106,12 @@ public class LoginActivity extends AppCompatActivity {
             });
         });
 
-        btnLogin=findViewById(R.id.btnLogin);
-        btnLogin.setOnClickListener((View v)->{
+        btnLogin = findViewById(R.id.btnLogin);
+        btnLogin.setOnClickListener((View v) -> {
             signInWithPhoneNumber();
         });
 
-        btnSendOtp=findViewById(R.id.otpSend);
+        btnSendOtp = findViewById(R.id.otpSend);
         btnSendOtp.setOnClickListener(view -> {
             sendOTP();
         });
@@ -123,30 +123,30 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if(UsersSharedPrefManager.getInstance(this).isLoggedIn()){
+        if (UsersSharedPrefManager.getInstance(this).isLoggedIn()) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
     }
 
-    private void signInWithPhoneNumber(){
+    private void signInWithPhoneNumber() {
         String pin = inputPin.getText().toString().trim();
 
-        if(pin.isEmpty()){
+        if (pin.isEmpty()) {
             inputPin.setError("Required Pin No.");
             inputPin.requestFocus();
             return;
         }
         // change it into not equals.
-        if(pin.equals(otpPin)){
+        if (pin.equals(otpPin)) {
 
             inputPhoneNo.setError("Required Valid Pin");
             inputPhoneNo.requestFocus();
             return;
 
-        }else{
-            if(uid != null){
+        } else {
+            if (uid != null) {
 
                 loadingDialog.startLoadingDialog();
                 Call<LoginResponse> call = RetrofitClient.getInstance().getApi().getUser(uid);
@@ -156,7 +156,7 @@ public class LoginActivity extends AppCompatActivity {
                         loadingDialog.dismissDialog();
                         LoginResponse loginResponse = response.body();
 
-                        if(!loginResponse.isErr()){
+                        if (!loginResponse.isErr()) {
 
                             //save user in sheared preference.
                             UsersSharedPrefManager.getInstance(LoginActivity.this)
@@ -166,7 +166,7 @@ public class LoginActivity extends AppCompatActivity {
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
 
-                        }else {
+                        } else {
                             inputPhoneNo.setError(loginResponse.getMsg());
                             inputPhoneNo.requestFocus();
                         }
@@ -178,10 +178,10 @@ public class LoginActivity extends AppCompatActivity {
                         System.out.println(t.getMessage());
                     }
                 });
-            }else{
+            } else {
                 String phone_no = inputPhoneNo.getText().toString().trim();
-                UsersSharedPrefManager.getInstance(LoginActivity.this).setLoginWith("mobile",phone_no);
-                Intent intent = new Intent(LoginActivity.this,ProfileActivity.class);
+                UsersSharedPrefManager.getInstance(LoginActivity.this).setLoginWith("mobile", phone_no);
+                Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
                 startActivity(intent);
             }
         }
@@ -193,19 +193,19 @@ public class LoginActivity extends AppCompatActivity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    private void signInWithFacebook(AccessToken accessToken){
+    private void signInWithFacebook(AccessToken accessToken) {
         GraphRequest graphRequest = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
             @Override
             public void onCompleted(JSONObject object, GraphResponse response) {
 
-                try{
+                try {
 
                     String fbId = object.getString("id");
-                    String fbName = object.getString("first_name") +" "+ object.getString("last_name");
+                    String fbName = object.getString("first_name") + " " + object.getString("last_name");
                     String fbMail = object.getString("email");
 
                     loadingDialog.startLoadingDialog();
-                    Call<LoginResponse> call = RetrofitClient.getInstance().getApi().getUserbyemail(fbId,fbMail);
+                    Call<LoginResponse> call = RetrofitClient.getInstance().getApi().getUserbyemail(fbId, fbMail);
 
                     call.enqueue(new Callback<LoginResponse>() {
                         @Override
@@ -213,11 +213,11 @@ public class LoginActivity extends AppCompatActivity {
                             LoginResponse loginResponse = response.body();
                             loadingDialog.dismissDialog();
 
-                            if(loginResponse.isErr()){
-                                UsersSharedPrefManager.getInstance(LoginActivity.this).setLoginWith(fbId,"facebook",fbMail,fbName);
-                                Intent intent = new Intent(LoginActivity.this,ProfileActivity.class);
+                            if (loginResponse.isErr()) {
+                                UsersSharedPrefManager.getInstance(LoginActivity.this).setLoginWith(fbId, "facebook", fbMail, fbName);
+                                Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
                                 startActivity(intent);
-                            }else {
+                            } else {
 
                                 //save user in sheared preference.
                                 UsersSharedPrefManager.getInstance(LoginActivity.this)
@@ -237,7 +237,9 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     });
 
-                }catch (Exception e){e.printStackTrace();}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -245,25 +247,24 @@ public class LoginActivity extends AppCompatActivity {
     AccessTokenTracker tokenTracker = new AccessTokenTracker() {
         @Override
         protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-            if(currentAccessToken!=null){
+            if (currentAccessToken != null) {
                 signInWithFacebook(currentAccessToken);
             }
         }
     };
 
 
-
-    private void sendOTP(){
+    private void sendOTP() {
         String phone_no = inputPhoneNo.getText().toString().trim();
 
-        if(phone_no.isEmpty()){
+        if (phone_no.isEmpty()) {
             inputPhoneNo.setError("Required Phone Number");
             inputPhoneNo.requestFocus();
             return;
         }
 
-        if(phone_no.length() != 10 ||
-                !(Character.getNumericValue(phone_no.charAt(0)) < 10 && Character.getNumericValue(phone_no.charAt(0)) > 5) ){
+        if (phone_no.length() != 10 ||
+                !(Character.getNumericValue(phone_no.charAt(0)) < 10 && Character.getNumericValue(phone_no.charAt(0)) > 5)) {
             inputPhoneNo.setError("Required Valid Phone Number");
             inputPhoneNo.requestFocus();
             return;
@@ -274,19 +275,18 @@ public class LoginActivity extends AppCompatActivity {
         inputPin.requestFocus();
 
 
-
-        Call<OtpResponse> call = RetrofitClient.getInstance().getApi().getOtp("+91"+phone_no);
+        Call<OtpResponse> call = RetrofitClient.getInstance().getApi().getOtp("+91" + phone_no);
 
         call.enqueue(new Callback<OtpResponse>() {
             @Override
             public void onResponse(Call<OtpResponse> call, Response<OtpResponse> response) {
                 OtpResponse otpResponse = response.body();
-                if(!otpResponse.isErr()){
+                if (!otpResponse.isErr()) {
 
                     otpPin = otpResponse.getOtp();
                     uid = otpResponse.getUid();
 
-                }else{
+                } else {
                     inputPhoneNo.setEnabled(true);
                     btnSendOtp.setEnabled(true);
                     btnSendOtp.setText("Send OTP");
@@ -330,7 +330,7 @@ public class LoginActivity extends AppCompatActivity {
             if (account != null) {
 
                 loadingDialog.startLoadingDialog();
-                Call<LoginResponse> call = RetrofitClient.getInstance().getApi().getUserbyemail(account.getId(),account.getEmail());
+                Call<LoginResponse> call = RetrofitClient.getInstance().getApi().getUserbyemail(account.getId(), account.getEmail());
 
                 call.enqueue(new Callback<LoginResponse>() {
                     @Override
@@ -338,11 +338,11 @@ public class LoginActivity extends AppCompatActivity {
                         LoginResponse loginResponse = response.body();
                         loadingDialog.dismissDialog();
 
-                        if(loginResponse.isErr()){
-                            UsersSharedPrefManager.getInstance(LoginActivity.this).setLoginWith("google",account.getEmail(),account.getDisplayName());
-                            Intent intent = new Intent(LoginActivity.this,ProfileActivity.class);
+                        if (loginResponse.isErr()) {
+                            UsersSharedPrefManager.getInstance(LoginActivity.this).setLoginWith("google", account.getEmail(), account.getDisplayName());
+                            Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
                             startActivity(intent);
-                        }else {
+                        } else {
 
                             //save user in sheared preference.
                             UsersSharedPrefManager.getInstance(LoginActivity.this)

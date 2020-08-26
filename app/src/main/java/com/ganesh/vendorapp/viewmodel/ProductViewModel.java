@@ -3,6 +3,7 @@ package com.ganesh.vendorapp.viewmodel;
 import android.app.Application;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -39,6 +40,7 @@ public class ProductViewModel extends AndroidViewModel {
 
     public void delete(ProductRoom productRoom) {
         new DeleteAsyncTask(productDao).execute(productRoom);
+        Log.e(TAG, "Delete Api message: " + productRoom.title);
     }
 
     private class OperationsAsyncTask extends AsyncTask<ProductRoom, Void, Void> {

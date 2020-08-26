@@ -23,6 +23,4 @@ public interface ProductDao {
     @Delete
     void delete(ProductRoom... products);
 
-    @Update
-    void updateProduct(ProductRoom product);
 }

@@ -1,5 +1,6 @@
 package com.ganesh.vendorapp.storage;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -12,8 +13,8 @@ import java.util.List;
 @Entity
 public class SavedProductRoom {
 
-    @PrimaryKey(autoGenerate = true)
-    public int uid;
+    @NonNull
+    @PrimaryKey
     @ColumnInfo(name = "product_id")
     public String productId;
 
