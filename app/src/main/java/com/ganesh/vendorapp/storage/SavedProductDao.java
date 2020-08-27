@@ -19,4 +19,8 @@ public interface SavedProductDao {
 
     @Delete
     void delete(SavedProductRoom... products);
+
+    @Query("DELETE FROM savedproductroom")
+    void deleteAll();
+
 }

@@ -2,7 +2,6 @@ package com.ganesh.vendorapp.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,26 +23,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.ganesh.vendorapp.R;
-import com.ganesh.vendorapp.activities.MainActivity;
-import com.ganesh.vendorapp.activities.ProfileActivity;
 import com.ganesh.vendorapp.api.APIs;
 import com.ganesh.vendorapp.api.RetrofitClient;
-import com.ganesh.vendorapp.models.Products;
 import com.ganesh.vendorapp.adapters.ProductsAdapter;
 import com.ganesh.vendorapp.models.ProductsItem;
 import com.ganesh.vendorapp.models.ProductsResponse;
-import com.ganesh.vendorapp.models.SaveResponse;
-import com.ganesh.vendorapp.models.Variants;
-import com.ganesh.vendorapp.models.VariantsItem;
-import com.ganesh.vendorapp.storage.ProductDao;
 import com.ganesh.vendorapp.storage.ProductRoom;
 import com.ganesh.vendorapp.storage.SavedProductRoom;
 import com.ganesh.vendorapp.storage.UsersSharedPrefManager;
 import com.ganesh.vendorapp.utils.Helper;
 import com.ganesh.vendorapp.viewmodel.ProductViewModel;
 import com.ganesh.vendorapp.viewmodel.SavedProductViewModel;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -56,41 +47,17 @@ import retrofit2.Response;
 public class ProductFragment extends Fragment {
 
     private static final String TAG = "ProductFragment";
-    public RecyclerView recyclerViewProducts;
+    public RecyclerView productRecycler;
     public List<ProductsItem> productsItems;
     public ProductViewModel productViewModel;
     private ProductsAdapter productsAdapter;
     private APIs api;
-    private SavedProductRoom productRoom;
+    private SavedProductRoom savedProductRoom;
     private SavedProductViewModel savedProductViewModel;
     private SwipeRefreshLayout refresher;
     private ProgressDialog progressDialog;
     private Helper helper;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.item_delete:
-                deleteProducts(productsAdapter.getSelectedProducts());
-                break;
-            case R.id.item_save:
-                checkAndSaveToServer();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+    private LinearLayout noData;
 
 
     @Nullable
@@ -105,22 +72,28 @@ public class ProductFragment extends Fragment {
         productsItems = new ArrayList<>();
         productViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
         savedProductViewModel = ViewModelProviders.of(this).get(SavedProductViewModel.class);
-        recyclerViewProducts = view.findViewById(R.id.recycler_view_products);
+        productRecycler = view.findViewById(R.id.recycler_view_products);
         refresher = view.findViewById(R.id.refresher);
-        recyclerViewProducts.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
+        noData = view.findViewById(R.id.noDataLayout);
+        productRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
 
         api = RetrofitClient.getInstance().getApi();
         progressDialog = new ProgressDialog(getContext());
         helper = new Helper();
 
-        //get products from api and save in local db
-        getProducts();
+        noData.setVisibility(View.VISIBLE);
+        productRecycler.setVisibility(View.GONE);
 
+        //get products from local db
+        showSavedProducts();
+//        getProducts();
+
+        //refreshes data with api data
         refresher.setOnRefreshListener(this::getProducts);
 
     }
 
-    private void checkAndSaveToServer() {
+    /*private void checkAndSaveToServer() {
         List<Products> localProducts = new ArrayList<>();
         //Fetching products from local db and checking if saved to server or not
         productViewModel.getProductList().observe(getViewLifecycleOwner(), productRooms -> {
@@ -267,18 +240,13 @@ public class ProductFragment extends Fragment {
             }
         });
 
-    }
+    }*/
 
     private void deleteProducts(List<ProductsItem> selectedProducts) {
         if (selectedProducts != null) {
             List<ProductsItem> whole = productsAdapter.getAdapterList();
             for (ProductsItem a : selectedProducts) {
                 whole.remove(a);
-
-                ProductRoom productRoom = new ProductRoom();
-                productRoom.productId = a.getProductId();
-                productRoom.title = a.getTitle();
-                productViewModel.delete(productRoom);
 
                 SavedProductRoom deleteProduct = new SavedProductRoom();
                 deleteProduct.productId = a.getProductId();
@@ -288,6 +256,10 @@ public class ProductFragment extends Fragment {
                 UsersSharedPrefManager.getInstance(getContext()).setDeletedProductId(a.getProductId());
             }
             productsAdapter.notifyDataSetChanged();
+            if (productsAdapter.getAdapterList().isEmpty()) {
+                noData.setVisibility(View.VISIBLE);
+                productRecycler.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -304,19 +276,22 @@ public class ProductFragment extends Fragment {
     }
 
     private void showSavedProducts() {
-        savedProductViewModel.getProductList().observe(getViewLifecycleOwner(), savedProductRooms -> {
-            if (!savedProductRooms.isEmpty()) {
-                List<ProductsItem> savedProducts = new ArrayList<>();
-                Log.e(TAG, "savedProductViewModel: " + savedProductRooms.size());
-                for (SavedProductRoom a : savedProductRooms) {
-                    savedProducts.add(new ProductsItem(a.productId, a.description, a.company, a.title, a.variants));
-                    Log.e(TAG, "Saved Product: " + a.productId);
+        if (!productsItems.isEmpty()) {
+            savedProductViewModel.getProductList().observe(getViewLifecycleOwner(), savedProductRooms -> {
+                if (!savedProductRooms.isEmpty()) {
+                    List<ProductsItem> savedProducts = new ArrayList<>();
+                    Log.e(TAG, "savedProductViewModel: " + savedProductRooms.size());
+                    for (SavedProductRoom a : savedProductRooms) {
+                        savedProducts.add(new ProductsItem(a.productId, a.description, a.company, a.title, a.variants));
+                        Log.e(TAG, "Saved Product: " + a.productId);
+                    }
+                    Log.e(TAG, "savedProducts: " + savedProducts.size());
+                    productsAdapter = new ProductsAdapter(savedProducts, getContext());
+                    productRecycler.setAdapter(productsAdapter);
                 }
-                Log.e(TAG, "savedProducts: " + savedProducts.size());
-                productsAdapter = new ProductsAdapter(savedProducts, getContext());
-                recyclerViewProducts.setAdapter(productsAdapter);
-            }
-        });
+            });
+        } else
+            getProducts();
     }
 
     private void writeToAFile(List<String> image) {
@@ -330,43 +305,32 @@ public class ProductFragment extends Fragment {
     }
 
     private void getProducts() {
-        if (isNetworkConnected()) {
+        if (helper.isNetworkConnected(getContext())) {
             showLoading();
             api.getProducts(UsersSharedPrefManager.getInstance(getContext()).getUid())
                     .enqueue(new Callback<ProductsResponse>() {
                         @Override
                         public void onResponse(Call<ProductsResponse> call, Response<ProductsResponse> response) {
                             if (response.isSuccessful()) {
-                                if (productsItems != null)
-                                    productsItems.clear();
                                 productsItems = response.body().getProducts();
                                 if (productsItems != null) {
-                                    Log.e(TAG, "Products from Api: " + productsItems.size());
+                                    noData.setVisibility(View.GONE);
+                                    productRecycler.setVisibility(View.VISIBLE);
                                     for (ProductsItem a : productsItems) {
                                         Log.e(TAG, "Product from API: " + a.toString());
-                                        productRoom = new SavedProductRoom();
-                                        productRoom.title = a.getTitle();
-                                        productRoom.company = a.getCompany();
-                                        productRoom.description = a.getDescription();
-                                        productRoom.productId = a.getProductId();
-                                        productRoom.userId = UsersSharedPrefManager.getInstance(getContext()).getUid();
-                                        productRoom.variants = a.getVariants();
-                                        savedProductViewModel.insert(productRoom);
-
-                                        ProductRoom localdb = new ProductRoom();
-                                        localdb.title = a.getTitle();
-                                        localdb.productId = a.getProductId();
-                                        localdb.userId = UsersSharedPrefManager.getInstance(getContext()).getUid();
-                                        localdb.description = a.getDescription();
-                                        localdb.company = a.getCompany();
-                                        List<Variants> variants = new ArrayList<>();
-                                        for (VariantsItem b : a.getVariants()) {
-                                            variants.add(new Variants(b.getVariantName(), b.getQuantity(), b.getPrice(), b.getImage()));
-                                        }
-                                        localdb.variants = variants;
-                                        productViewModel.insert(localdb);
+                                        savedProductRoom = new SavedProductRoom();
+                                        savedProductRoom.title = a.getTitle();
+                                        savedProductRoom.company = a.getCompany();
+                                        savedProductRoom.description = a.getDescription();
+                                        savedProductRoom.productId = a.getProductId();
+                                        savedProductRoom.userId = UsersSharedPrefManager.getInstance(getContext()).getUid();
+                                        savedProductRoom.variants = a.getVariants();
+                                        savedProductViewModel.insert(savedProductRoom);
                                     }
                                     showSavedProducts();
+                                } else {
+                                    noData.setVisibility(View.VISIBLE);
+                                    productRecycler.setVisibility(View.GONE);
                                 }
                             }
                             refresher.setRefreshing(false);
@@ -377,14 +341,35 @@ public class ProductFragment extends Fragment {
                         public void onFailure(Call<ProductsResponse> call, Throwable t) {
                             Log.e(TAG, "onFailure: " + t);
                             refresher.setRefreshing(false);
+                            noData.setVisibility(View.VISIBLE);
+                            productRecycler.setVisibility(View.GONE);
                             Toast.makeText(getContext(), "Connection timed out", Toast.LENGTH_SHORT).show();
                         }
                     });
+        } else {
+            Toast.makeText(getContext(), "No Internet Connection", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private boolean isNetworkConnected() {
-        ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
+
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.item_delete) {
+            deleteProducts(productsAdapter.getSelectedProducts());
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }

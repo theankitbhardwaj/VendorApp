@@ -3,6 +3,7 @@ package com.ganesh.vendorapp.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,31 +15,31 @@ import com.ganesh.vendorapp.fragments.OutOfStockFragment;
 import com.ganesh.vendorapp.fragments.ProductFragment;
 import com.ganesh.vendorapp.models.User;
 import com.ganesh.vendorapp.storage.UsersSharedPrefManager;
+import com.ganesh.vendorapp.viewmodel.SavedProductViewModel;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
 
     private GoogleSignInClient mGoogleSignInClient;
+    private SavedProductViewModel savedProductViewModel;
+    private BottomNavigationView bottomNavigationView;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*ProductDbHelper productDbHelper = new ProductDbHelper(this);
-        SQLiteDatabase database = productDbHelper.getReadableDatabase();*/
 
+        bottomNavigationView = findViewById(R.id.nav_view);
+        user = UsersSharedPrefManager.getInstance(this).getUser();
+        savedProductViewModel = ViewModelProviders.of(this).get(SavedProductViewModel.class);
 
-        BottomNavigationView bottomNavigationView = findViewById(R.id.nav_view);
-        User user = UsersSharedPrefManager.getInstance(this).getUser();
-
-       getSupportActionBar().setTitle("Welcome " + user.getFullName().split(" ", 2)[0]);
+        getSupportActionBar().setTitle("Welcome " + user.getFullName().split(" ", 2)[0]);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -114,11 +115,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void logOut() {
-
-        UsersSharedPrefManager.getInstance(getApplicationContext())
-                .clear();
+        savedProductViewModel.deleteAllLocalDb();
+        UsersSharedPrefManager.getInstance(getApplicationContext()).clear();
         signOut();
-
     }
 
     private void signOut() {

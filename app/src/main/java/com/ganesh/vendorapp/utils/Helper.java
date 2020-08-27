@@ -2,6 +2,7 @@ package com.ganesh.vendorapp.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Base64;
@@ -83,6 +84,16 @@ public class Helper {
         } else
             return false;
     }
+
+    public boolean isNetworkConnected(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
+    }
+
+    public void deleteUserProducts(){
+
+    }
+
 
 
 }

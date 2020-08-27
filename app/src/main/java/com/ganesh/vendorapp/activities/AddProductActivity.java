@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -21,15 +22,23 @@ import android.widget.Toast;
 
 import com.ganesh.vendorapp.R;
 import com.ganesh.vendorapp.adapters.VariantAdapter;
+import com.ganesh.vendorapp.api.APIs;
+import com.ganesh.vendorapp.api.RetrofitClient;
 import com.ganesh.vendorapp.models.ProductsItem;
+import com.ganesh.vendorapp.models.SaveResponse;
 import com.ganesh.vendorapp.models.Variants;
 import com.ganesh.vendorapp.storage.ProductRoom;
 import com.ganesh.vendorapp.storage.UsersSharedPrefManager;
 import com.ganesh.vendorapp.utils.Helper;
 import com.ganesh.vendorapp.viewmodel.ProductViewModel;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AddProductActivity extends AppCompatActivity {
 
@@ -45,7 +54,9 @@ public class AddProductActivity extends AppCompatActivity {
     private static final int STORAGE_PERMISSION = 105;
     private Helper helper;
     private boolean accessGranted = false;
-    private ProductsItem productToEdit;
+    private APIs api;
+    private ProgressDialog progressDialog;
+    private static final String TAG = AddProductActivity.class.getSimpleName();
 
 
     @Override
@@ -62,11 +73,11 @@ public class AddProductActivity extends AppCompatActivity {
         variantRecycler = findViewById(R.id.variantRecycler);
         productViewModel = ViewModelProviders.of(this).get(ProductViewModel.class);
         helper = new Helper();
+        progressDialog = new ProgressDialog(this);
+        api = RetrofitClient.getInstance().getApi();
         variantsList = new ArrayList<>();
         variantRecycler.setHasFixedSize(true);
         variantRecycler.setLayoutManager(new LinearLayoutManager(this));
-
-
 
         variantAdapter = new VariantAdapter(variantsList, this);
         variantRecycler.setAdapter(variantAdapter);
@@ -75,10 +86,10 @@ public class AddProductActivity extends AppCompatActivity {
             Variants variants = new Variants();
             variantsList.add(variants);
             variantAdapter.notifyDataSetChanged();
-
         });
 
     }
+
 
     public void getImage(int position) {
         if (accessGranted) {
@@ -101,19 +112,51 @@ public class AddProductActivity extends AppCompatActivity {
         if (validateMainData()) {
             List<Variants> data = getVariantData();
             if (data != null) {
-                productRoom = new ProductRoom();
-                productRoom.productId = helper.getRandomID();
-                productRoom.userId = UsersSharedPrefManager.getInstance(this).getUid();
-                productRoom.title = title.getText().toString().trim();
-                productRoom.company = company.getText().toString().trim();
-                productRoom.description = description.getText().toString().trim();
-                productRoom.variants = data;
-                productViewModel.insert(productRoom);
-                finish();
+                if (helper.isNetworkConnected(this)) {
+                    showLoading();
+                    List<Variants> newVariantList = new ArrayList<>();
+                    for (Variants b : data) {
+                        newVariantList.add(new Variants(
+                                b.getVariant_name(),
+                                b.getQuantity(),
+                                b.getPrice(),
+                                helper.base64String(b.getImage(), this)
+                        ));
+                    }
+                    api.saveProducts(
+                            company.getText().toString().trim(),
+                            description.getText().toString().trim(),
+                            helper.getRandomID(),
+                            title.getText().toString().trim(),
+                            UsersSharedPrefManager.getInstance(this).getUid(),
+                            new Gson().toJson(newVariantList)
+                    ).enqueue(new Callback<SaveResponse>() {
+                        @Override
+                        public void onResponse(Call<SaveResponse> call, Response<SaveResponse> response) {
+                            if (response.isSuccessful()) {
+                                Log.e(TAG, "onResponse: " + response.body().getMessage());
+                                if (response.body().getError().equals("false")) {
+                                    cancelLoading();
+                                    Log.e(TAG, "Product: " + title.getText().toString().trim() + " is saved successfully");
+                                    Toast.makeText(AddProductActivity.this, "Product: " + title.getText().toString().trim() + " is saved successfully", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<SaveResponse> call, Throwable t) {
+                            Log.e(TAG, "onFailure: " + t);
+                            cancelLoading();
+                            Toast.makeText(AddProductActivity.this, "Connection timed out. Please try again", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Toast.makeText(this, "Connect to the internet to save the product", Toast.LENGTH_SHORT).show();
+                }
             } else {
                 Toast.makeText(this, "Please add variants", Toast.LENGTH_SHORT).show();
             }
-
         } else {
             Toast.makeText(this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
         }
@@ -153,6 +196,18 @@ public class AddProductActivity extends AppCompatActivity {
         else if (company.getText().toString().trim().equals(""))
             return false;
         else return !description.getText().toString().trim().equals("");
+    }
+
+    private void showLoading() {
+        progressDialog.setMessage("Saving product...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    private void cancelLoading() {
+        if (progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
     }
 
     @Override
@@ -195,6 +250,7 @@ public class AddProductActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.save_product_btn) {
+
             saveProductItem();
         }
         if (item.getItemId() == android.R.id.home) {

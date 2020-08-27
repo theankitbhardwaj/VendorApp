@@ -6,16 +6,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ganesh.vendorapp.R;
 import com.ganesh.vendorapp.adapters.DisplayVariantAdapter;
+import com.ganesh.vendorapp.adapters.ImageSliderAdapter;
 import com.ganesh.vendorapp.models.ProductsItem;
-import com.ganesh.vendorapp.storage.ProductRoom;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.smarteist.autoimageslider.SliderView;
 
 public class ProductDetailActivity extends AppCompatActivity {
 
@@ -23,7 +23,6 @@ public class ProductDetailActivity extends AppCompatActivity {
     private TextView title, company, description;
     private RecyclerView variantRecycler;
     private DisplayVariantAdapter displayVariantAdapter;
-    private ImageView imageView;
     private FloatingActionButton edit;
 
 
@@ -39,17 +38,12 @@ public class ProductDetailActivity extends AppCompatActivity {
         company = findViewById(R.id.company);
         description = findViewById(R.id.description);
         variantRecycler = findViewById(R.id.variantRecycler);
-        imageView = findViewById(R.id.imageDisplay);
         edit = findViewById(R.id.editProduct);
 
 
-        Glide.with(this)
-                .load("https://grras-apidashboard.000webhostapp.com/admin/images/vendor_product/" + product.getVariants().get(0).getImage().get(0))
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                .into(imageView);
 
         title.setText(product.getTitle());
-        company.setText(product.getCompany());
+        company.setText("by "+product.getCompany());
         description.setText(product.getDescription());
         displayVariantAdapter = new DisplayVariantAdapter(product.getVariants(), this);
         variantRecycler.setLayoutManager(new LinearLayoutManager(this));

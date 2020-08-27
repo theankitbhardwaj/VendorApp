@@ -43,6 +43,10 @@ public class SavedProductViewModel extends AndroidViewModel {
         return productList;
     }
 
+    public void deleteAllLocalDb() {
+        new DeleteAllTask(productDao).execute();
+    }
+
     public void insert(SavedProductRoom productRoom) {
         new SavedProductViewModel.InsertAsyncTask(productDao).execute(productRoom);
     }
@@ -103,6 +107,19 @@ public class SavedProductViewModel extends AndroidViewModel {
         @Override
         protected Void doInBackground(SavedProductRoom... productRooms) {
             mAsyncTaskDao.delete(productRooms);
+            return null;
+        }
+    }
+
+    private class DeleteAllTask extends SavedProductViewModel.OperationsAsyncTask {
+
+        public DeleteAllTask(SavedProductDao noteDao) {
+            super(noteDao);
+        }
+
+        @Override
+        protected Void doInBackground(SavedProductRoom... productRooms) {
+            mAsyncTaskDao.deleteAll();
             return null;
         }
     }
