@@ -58,10 +58,10 @@ public class ProductsAdapter extends RecyclerView.Adapter<ProductsAdapter.Produc
             holder.tv_item_color_variant.setText(product.getVariants().size() + "");
             holder.tv_item_price.setText(product.getVariants().get(0).getPrice() + "");
 
-            /*Glide.with(context)
+            Glide.with(context)
                     .load("https://grras-apidashboard.000webhostapp.com/admin/images/vendor_product/" + product.getVariants().get(0).getImage().get(0))
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                    .into(holder.view);*/
+                    .into(holder.view);
         }
 
         holder.cardView.setOnClickListener(view -> {

@@ -5,10 +5,13 @@ import android.content.SharedPreferences;
 
 import com.ganesh.vendorapp.models.Products;
 import com.ganesh.vendorapp.models.User;
+import com.google.android.gms.common.util.Strings;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UsersSharedPrefManager {
 
@@ -120,6 +123,29 @@ public class UsersSharedPrefManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("base64", string);
         editor.apply();
+    }
+
+    public void setDeletedProductId(String id) {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        List<String> temp = getDeletedProducts();
+        if (temp != null && !temp.isEmpty()) {
+            temp.add(temp.size(), id);
+        }else{
+            temp = new ArrayList<>();
+            temp.add(id);
+        }
+        editor.putString("Deleted Products", new Gson().toJson(temp));
+        editor.apply();
+    }
+
+    public List<String> getDeletedProducts() {
+        List<String> ids;
+        Type type = new TypeToken<List<String>>() {
+        }.getType();
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        ids = new Gson().fromJson(sharedPreferences.getString("Deleted Products", null), type);
+        return ids;
     }
 
 }

@@ -42,17 +42,22 @@ public class Helper {
         List<String> base64 = new ArrayList<>();
         for (int i = 0; i < uri.size(); i++) {
             Bitmap bitmap;
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), Uri.parse(uri.get(i)));
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream);
-                byte[] imgByte = byteArrayOutputStream.toByteArray();
-                base64.add(Base64.encodeToString(imgByte, Base64.DEFAULT));
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (uri.get(i).contains("content")) {
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), Uri.parse(uri.get(i)));
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream);
+                    byte[] imgByte = byteArrayOutputStream.toByteArray();
+                    base64.add(Base64.encodeToString(imgByte, Base64.DEFAULT));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                base64.add(uri.get(i));
             }
         }
         return base64;
     }
+
     public boolean validateVariantData(Variants variants) {
         if (variants != null) {
             if (variants.getVariant_name() == null)
@@ -65,6 +70,7 @@ public class Helper {
         } else
             return false;
     }
+
     public boolean validateVariantData(VariantsItem variants) {
         if (variants != null) {
             if (variants.getVariantName() == null)
@@ -77,7 +83,6 @@ public class Helper {
         } else
             return false;
     }
-
 
 
 }

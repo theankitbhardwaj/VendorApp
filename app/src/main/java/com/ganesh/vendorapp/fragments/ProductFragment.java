@@ -65,6 +65,7 @@ public class ProductFragment extends Fragment {
     private SavedProductViewModel savedProductViewModel;
     private SwipeRefreshLayout refresher;
     private ProgressDialog progressDialog;
+    private Helper helper;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -83,6 +84,9 @@ public class ProductFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.item_delete:
                 deleteProducts(productsAdapter.getSelectedProducts());
+                break;
+            case R.id.item_save:
+                checkAndSaveToServer();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -107,50 +111,100 @@ public class ProductFragment extends Fragment {
 
         api = RetrofitClient.getInstance().getApi();
         progressDialog = new ProgressDialog(getContext());
+        helper = new Helper();
 
         //get products from api and save in local db
         getProducts();
 
         refresher.setOnRefreshListener(this::getProducts);
 
-        checkAndSaveToServer();
-
     }
 
     private void checkAndSaveToServer() {
+        List<Products> localProducts = new ArrayList<>();
         //Fetching products from local db and checking if saved to server or not
         productViewModel.getProductList().observe(getViewLifecycleOwner(), productRooms -> {
             if (!productRooms.isEmpty()) {
                 Log.e(TAG, "Product room size: " + productRooms.size());
-                List<Products> localProducts = new ArrayList<>();
                 for (ProductRoom a : productRooms) {
-                    localProducts.add(new Products(a.productId, a.userId, a.description, a.company, a.title, a.variants));
+                    localProducts.add(new Products(a.productId, a.userId, a.title, a.company, a.description, a.variants));
                 }
+            }
+        });
 
-                //Products which are fetched and saved in local db2
-                savedProductViewModel.getProductList().observe(getViewLifecycleOwner(), savedProductRooms -> {
-                    if (!savedProductRooms.isEmpty()) {
-                        Log.e(TAG, "Saved room size: " + savedProductRooms.size());
-                        List<ProductsItem> serverProducts = new ArrayList<>();
-                        List<String> productIds = new ArrayList<>();
-                        for (SavedProductRoom a : savedProductRooms) {
-                            serverProducts.add(new ProductsItem(
-                                    a.productId, a.description, a.company, a.title, a.variants)
-                            );
-                        }
-                        for (ProductsItem a : serverProducts) {
-                            productIds.add(a.getProductId());
-                        }
-                        for (Products a : localProducts) {
-                            if (localProducts.size() > serverProducts.size() && !productIds.contains(a.getProduct_id())) {
-                                Log.e(TAG, "Sending products to server: local products " + localProducts.size() + "\n" + "Server products " + savedProductRooms.size());
+        //Products which are fetched and saved in local db2
+        savedProductViewModel.getProductList().observe(getViewLifecycleOwner(), savedProductRooms -> {
+            if (!localProducts.isEmpty()) {
+                if (!savedProductRooms.isEmpty()) {
+                    Log.e(TAG, "Saved room size: " + savedProductRooms.size());
+                    List<ProductsItem> serverProducts = new ArrayList<>();
+                    List<String> productIds = new ArrayList<>();
+                    for (SavedProductRoom a : savedProductRooms) {
+                        serverProducts.add(new ProductsItem(
+                                a.productId, a.description, a.company, a.title, a.variants)
+                        );
+                    }
+                    for (ProductsItem a : serverProducts) {
+                        productIds.add(a.getProductId());
+                    }
+                    for (Products a : localProducts) {
+                        if (localProducts.size() > serverProducts.size() && !productIds.contains(a.getProduct_id())) {
+                            Log.e(TAG, "Sending products to server: local products " + localProducts.size() + "\n" + "Server products " + savedProductRooms.size());
+                            List<String> deletedId;
+                            deletedId = UsersSharedPrefManager.getInstance(getContext()).getDeletedProducts();
+                            if (deletedId != null) {
+                                if (!deletedId.contains(a.getProduct_id())) {
+                                    List<Variants> newVariantList = new ArrayList<>();
+                                    for (Variants b : a.getVariants()) {
+                                        newVariantList.add(new Variants(
+                                                b.getVariant_name(),
+                                                b.getQuantity(),
+                                                b.getPrice(),
+                                                helper.base64String(b.getImage(), getContext())
+                                        ));
+                                    }
+                                    api.saveProducts(
+                                            a.getCompany(),
+                                            a.getDescription(),
+                                            a.getProduct_id(),
+                                            a.getTitle(),
+                                            a.getUid(),
+                                            new Gson().toJson(newVariantList)
+                                    ).enqueue(new Callback<SaveResponse>() {
+                                        @Override
+                                        public void onResponse(Call<SaveResponse> call, Response<SaveResponse> response) {
+                                            if (response.isSuccessful()) {
+                                                Log.e(TAG, "onResponse: " + response.body().getMessage());
+                                                if (response.body().getError().equals("false")) {
+                                                    Log.e(TAG, "Product: " + a.getTitle() + " is saved successfully");
+                                                    Toast.makeText(getContext(), "Product: " + a.getTitle() + " is saved successfully", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<SaveResponse> call, Throwable t) {
+                                            Log.e(TAG, "onFailure: " + t);
+                                        }
+                                    });
+                                }
+                            } else {
+                                List<Variants> newVariantList = new ArrayList<>();
+                                for (Variants b : a.getVariants()) {
+                                    newVariantList.add(new Variants(
+                                            b.getVariant_name(),
+                                            b.getQuantity(),
+                                            b.getPrice(),
+                                            helper.base64String(b.getImage(), getContext())
+                                    ));
+                                }
                                 api.saveProducts(
                                         a.getCompany(),
                                         a.getDescription(),
                                         a.getProduct_id(),
                                         a.getTitle(),
                                         a.getUid(),
-                                        new Gson().toJson(a.getVariants())
+                                        new Gson().toJson(newVariantList)
                                 ).enqueue(new Callback<SaveResponse>() {
                                     @Override
                                     public void onResponse(Call<SaveResponse> call, Response<SaveResponse> response) {
@@ -170,39 +224,49 @@ public class ProductFragment extends Fragment {
                                 });
                             }
                         }
-                    } else {
-                        //Products which are only saved in local db
-                        Log.e(TAG, "Sending products to server: Fresh start");
-                        for (Products a : localProducts) {
-                            api.saveProducts(
-                                    a.getCompany(),
-                                    a.getDescription(),
-                                    a.getProduct_id(),
-                                    a.getTitle(),
-                                    a.getUid(),
-                                    new Gson().toJson(a.getVariants())
-                            ).enqueue(new Callback<SaveResponse>() {
-                                @Override
-                                public void onResponse(Call<SaveResponse> call, Response<SaveResponse> response) {
-                                    if (response.isSuccessful()) {
-                                        Log.e(TAG, "onResponse: " + response.body().getMessage());
-                                        if (response.body().getError().equals("false")) {
-                                            Log.e(TAG, "Product: " + a.getTitle() + " is saved successfully");
-                                            Toast.makeText(getContext(), "Product: " + a.getTitle() + " is saved successfully", Toast.LENGTH_SHORT).show();
-                                        }
+                    }
+                } else {
+                    //Products which are only saved in local db
+                    Log.e(TAG, "Sending products to server: Fresh start");
+                    for (Products a : localProducts) {
+                        List<Variants> newVariantList = new ArrayList<>();
+                        for (Variants b : a.getVariants()) {
+                            newVariantList.add(new Variants(
+                                    b.getVariant_name(),
+                                    b.getQuantity(),
+                                    b.getPrice(),
+                                    helper.base64String(b.getImage(), getContext())
+                            ));
+                        }
+                        api.saveProducts(
+                                a.getCompany(),
+                                a.getDescription(),
+                                a.getProduct_id(),
+                                a.getTitle(),
+                                a.getUid(),
+                                new Gson().toJson(newVariantList)
+                        ).enqueue(new Callback<SaveResponse>() {
+                            @Override
+                            public void onResponse(Call<SaveResponse> call, Response<SaveResponse> response) {
+                                if (response.isSuccessful()) {
+                                    Log.e(TAG, "onResponse: " + response.body().getMessage());
+                                    if (response.body().getError().equals("false")) {
+                                        Log.e(TAG, "Product: " + a.getTitle() + " is saved successfully");
+                                        Toast.makeText(getContext(), "Product: " + a.getTitle() + " is saved successfully", Toast.LENGTH_SHORT).show();
                                     }
                                 }
+                            }
 
-                                @Override
-                                public void onFailure(Call<SaveResponse> call, Throwable t) {
-                                    Log.e(TAG, "onFailure: " + t);
-                                }
-                            });
-                        }
+                            @Override
+                            public void onFailure(Call<SaveResponse> call, Throwable t) {
+                                Log.e(TAG, "onFailure: " + t);
+                            }
+                        });
                     }
-                });
+                }
             }
         });
+
     }
 
     private void deleteProducts(List<ProductsItem> selectedProducts) {
@@ -210,14 +274,18 @@ public class ProductFragment extends Fragment {
             List<ProductsItem> whole = productsAdapter.getAdapterList();
             for (ProductsItem a : selectedProducts) {
                 whole.remove(a);
+
                 ProductRoom productRoom = new ProductRoom();
                 productRoom.productId = a.getProductId();
                 productRoom.title = a.getTitle();
                 productViewModel.delete(productRoom);
+
                 SavedProductRoom deleteProduct = new SavedProductRoom();
                 deleteProduct.productId = a.getProductId();
                 deleteProduct.title = a.getTitle();
                 savedProductViewModel.delete(deleteProduct);
+
+                UsersSharedPrefManager.getInstance(getContext()).setDeletedProductId(a.getProductId());
             }
             productsAdapter.notifyDataSetChanged();
         }
@@ -247,8 +315,6 @@ public class ProductFragment extends Fragment {
                 Log.e(TAG, "savedProducts: " + savedProducts.size());
                 productsAdapter = new ProductsAdapter(savedProducts, getContext());
                 recyclerViewProducts.setAdapter(productsAdapter);
-                cancelLoading();
-                refresher.setRefreshing(false);
             }
         });
     }
@@ -271,7 +337,8 @@ public class ProductFragment extends Fragment {
                         @Override
                         public void onResponse(Call<ProductsResponse> call, Response<ProductsResponse> response) {
                             if (response.isSuccessful()) {
-                                productsItems.clear();
+                                if (productsItems != null)
+                                    productsItems.clear();
                                 productsItems = response.body().getProducts();
                                 if (productsItems != null) {
                                     Log.e(TAG, "Products from Api: " + productsItems.size());
@@ -302,11 +369,14 @@ public class ProductFragment extends Fragment {
                                     showSavedProducts();
                                 }
                             }
+                            refresher.setRefreshing(false);
+                            cancelLoading();
                         }
 
                         @Override
                         public void onFailure(Call<ProductsResponse> call, Throwable t) {
                             Log.e(TAG, "onFailure: " + t);
+                            refresher.setRefreshing(false);
                             Toast.makeText(getContext(), "Connection timed out", Toast.LENGTH_SHORT).show();
                         }
                     });
