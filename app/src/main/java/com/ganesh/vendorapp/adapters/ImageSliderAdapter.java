@@ -2,6 +2,7 @@ package com.ganesh.vendorapp.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,7 @@ public class ImageSliderAdapter extends
         SliderViewAdapter<ImageSliderAdapter.SliderAdapterVH> {
 
     private Context context;
-    private List<String> images = new ArrayList<>();
+    private List<String> images;
 
     public ImageSliderAdapter(Context context, List<String> images) {
         this.images = images;
@@ -38,10 +39,21 @@ public class ImageSliderAdapter extends
     @Override
     public void onBindViewHolder(SliderAdapterVH viewHolder, final int position) {
 
-        Glide.with(viewHolder.itemView)
-                .load("https://grras-apidashboard.000webhostapp.com/admin/images/vendor_product/" + images.get(position))
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-                .into(viewHolder.sliderImage);
+        if (images.get(position).contains("content")) {
+            Glide.with(viewHolder.itemView)
+                    .load(images.get(position))
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .into(viewHolder.sliderImage);
+        } else if (images.get(position).contains("banners"))
+            Glide.with(viewHolder.itemView)
+                    .load(images.get(position))
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .into(viewHolder.sliderImage);
+        else
+            Glide.with(viewHolder.itemView)
+                    .load("https://sambalpurihaat.com/admin/images/vendor_product/" + images.get(position))
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .into(viewHolder.sliderImage);
     }
 
     @Override

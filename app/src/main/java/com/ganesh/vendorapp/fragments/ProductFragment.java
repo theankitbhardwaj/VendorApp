@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.ganesh.vendorapp.R;
+import com.ganesh.vendorapp.adapters.ImageSliderAdapter;
 import com.ganesh.vendorapp.api.APIs;
 import com.ganesh.vendorapp.api.RetrofitClient;
 import com.ganesh.vendorapp.adapters.ProductsAdapter;
@@ -34,6 +35,7 @@ import com.ganesh.vendorapp.storage.UsersSharedPrefManager;
 import com.ganesh.vendorapp.utils.Helper;
 import com.ganesh.vendorapp.viewmodel.ProductViewModel;
 import com.ganesh.vendorapp.viewmodel.SavedProductViewModel;
+import com.smarteist.autoimageslider.SliderView;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -52,12 +54,15 @@ public class ProductFragment extends Fragment {
     public ProductViewModel productViewModel;
     private ProductsAdapter productsAdapter;
     private APIs api;
+    private SliderView imageSlider;
+    private ImageSliderAdapter imageSliderAdapter;
     private SavedProductRoom savedProductRoom;
     private SavedProductViewModel savedProductViewModel;
     private SwipeRefreshLayout refresher;
     private ProgressDialog progressDialog;
     private Helper helper;
     private LinearLayout noData;
+    private List<String> sliderImages;
 
 
     @Nullable
@@ -75,18 +80,26 @@ public class ProductFragment extends Fragment {
         productRecycler = view.findViewById(R.id.recycler_view_products);
         refresher = view.findViewById(R.id.refresher);
         noData = view.findViewById(R.id.noDataLayout);
+        imageSlider = view.findViewById(R.id.imageSlider);
         productRecycler.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.VERTICAL, false));
 
         api = RetrofitClient.getInstance().getApi();
         progressDialog = new ProgressDialog(getContext());
         helper = new Helper();
+        sliderImages = new ArrayList<>();
 
         noData.setVisibility(View.VISIBLE);
         productRecycler.setVisibility(View.GONE);
 
+
+        Log.e(TAG, "TimeStamp: " + helper.getTimeStamp());
+        sliderImages.add("https://sambalpurihaat.com/admin/images/banners/vendor_banner1.jpg");
+        sliderImages.add("https://sambalpurihaat.com/admin/images/banners/vendor_banner2.jpg");
+        sliderImages.add("https://sambalpurihaat.com/admin/images/banners/vendor_banner3.jpg");
+        imageSliderAdapter = new ImageSliderAdapter(getContext(), sliderImages);
+        imageSlider.setSliderAdapter(imageSliderAdapter);
         //get products from local db
         showSavedProducts();
-//        getProducts();
 
         //refreshes data with api data
         refresher.setOnRefreshListener(this::getProducts);
@@ -253,9 +266,8 @@ public class ProductFragment extends Fragment {
                 deleteProduct.title = a.getTitle();
                 savedProductViewModel.delete(deleteProduct);
 
-                UsersSharedPrefManager.getInstance(getContext()).setDeletedProductId(a.getProductId());
+                productsAdapter.notifyDataSetChanged();
             }
-            productsAdapter.notifyDataSetChanged();
             if (productsAdapter.getAdapterList().isEmpty()) {
                 noData.setVisibility(View.VISIBLE);
                 productRecycler.setVisibility(View.GONE);

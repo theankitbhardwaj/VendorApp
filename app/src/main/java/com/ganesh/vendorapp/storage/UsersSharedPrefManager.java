@@ -131,7 +131,7 @@ public class UsersSharedPrefManager {
         List<String> temp = getDeletedProducts();
         if (temp != null && !temp.isEmpty()) {
             temp.add(temp.size(), id);
-        }else{
+        } else {
             temp = new ArrayList<>();
             temp.add(id);
         }
@@ -146,6 +146,21 @@ public class UsersSharedPrefManager {
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         ids = new Gson().fromJson(sharedPreferences.getString("Deleted Products", null), type);
         return ids;
+    }
+
+    public void saveVariantImages(List<String> images) {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("variantImages", new Gson().toJson(images));
+        editor.apply();
+    }
+
+
+    public List<String> getVariantImages() {
+        Type type = new TypeToken<List<String>>() {
+        }.getType();
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        return new Gson().fromJson(sharedPreferences.getString("variantImages", null), type);
     }
 
 }

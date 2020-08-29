@@ -75,12 +75,19 @@ public interface APIs {
     );
 
 
-
     @GET("vendor/products/{uid}")
     Call<ProductsResponse> getProducts(@Path("uid") String uid);
 
     @GET("vendor/deleteproduct/{productId}")
     Call<SaveResponse> deleteProduct(@Path("productId") String productId);
+
+    @FormUrlEncoded
+    @POST("vendor/sendmessage")
+    Call<SaveResponse> sendQuery(
+            @Field("uid") String id,
+            @Field("name") String name,
+            @Field("message") String query,
+            @Field("timestamp") String timeStamp);
 
 
 }

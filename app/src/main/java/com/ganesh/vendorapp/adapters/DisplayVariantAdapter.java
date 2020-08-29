@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -47,6 +48,8 @@ public class DisplayVariantAdapter extends RecyclerView.Adapter<DisplayVariantAd
             holder.card.setCardBackgroundColor(Color.rgb(237, 237, 237));
         else
             holder.card.setCardBackgroundColor(Color.rgb(255, 255, 255));
+
+        holder.remove.setVisibility(View.GONE);
     }
 
     @Override
@@ -59,6 +62,7 @@ public class DisplayVariantAdapter extends RecyclerView.Adapter<DisplayVariantAd
         private TextView title, price, quantity;
         private CardView card;
         private SliderView imageSlider;
+        private ImageButton remove;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -67,7 +71,7 @@ public class DisplayVariantAdapter extends RecyclerView.Adapter<DisplayVariantAd
             quantity = itemView.findViewById(R.id.variantQuantity);
             card = itemView.findViewById(R.id.card);
             imageSlider = itemView.findViewById(R.id.imageSlider);
-
+            remove = itemView.findViewById(R.id.removeVariant);
 
         }
     }

@@ -12,7 +12,9 @@ import com.ganesh.vendorapp.models.VariantsItem;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -90,10 +92,11 @@ public class Helper {
         return cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnected();
     }
 
-    public void deleteUserProducts(){
-
+    public String getTimeStamp() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        Date resultdate = new Date(System.currentTimeMillis());
+        return sdf.format(resultdate);
     }
-
 
 
 }

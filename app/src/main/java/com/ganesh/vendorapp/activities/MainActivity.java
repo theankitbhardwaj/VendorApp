@@ -98,15 +98,15 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.item_help:
-
+                startActivity(new Intent(MainActivity.this, HelpActivity.class));
+                break;
             case R.id.item_delete:
 
             case R.id.item_search:
                 break;
 
             case R.id.item_profile:
-                Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(MainActivity.this, ProfileActivity.class));
                 break;
 
             default:

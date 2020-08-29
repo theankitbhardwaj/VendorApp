@@ -36,7 +36,7 @@
             android:layout_marginStart="16dp"
             android:layout_toEndOf="@id/imageView6"
             android:text="Kargil"
-            android:textColor="@color/darkGray"
+            android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/imageView6"
@@ -51,7 +51,6 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="5dp"
             android:text="Company"
-            android:textColor="@color/darkGray"
             android:textSize="14sp"
             app:layout_constraintStart_toEndOf="@+id/imageView6"
             app:layout_constraintTop_toBottomOf="@+id/tv_item_title" />

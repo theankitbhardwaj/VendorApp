@@ -8,7 +8,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
-    private static final String BASE_URL = "https://grras-apidashboard.000webhostapp.com/public/";
+    private static final String BASE_URL = "https://sambalpurihaat.com/public/";
     private static RetrofitClient mInstance;
     private Retrofit retrofit;
     private HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();

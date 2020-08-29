@@ -31,9 +31,20 @@
             app:sliderScrollTimeInSec="1"
             app:sliderStartAutoCycle="true" />
 
+        <ImageButton
+            android:id="@+id/removeVariant"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_alignParentEnd="true"
+            android:backgroundTint="@color/transparent"
+            android:tint="@color/colorPrimary"
+            app:srcCompat="@drawable/ic_baseline_delete_forever_24" />
+
         <TextView
             android:id="@+id/variantName"
             android:layout_width="wrap_content"
+            android:layout_toStartOf="@id/removeVariant"
+            android:layout_marginEnd="5dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:layout_toEndOf="@id/imageSlider"
@@ -51,7 +62,7 @@
             android:layout_marginTop="10dp"
             android:layout_toEndOf="@id/imageSlider"
             android:text="Each unit Price - 299/-"
-            android:textColor="@android:color/black"/>
+            android:textColor="@android:color/black" />
 
         <TextView
             android:id="@+id/variantQuantity"
@@ -62,7 +73,7 @@
             android:layout_marginTop="10dp"
             android:layout_toEndOf="@id/imageSlider"
             android:text="Total Quantity - 299/-"
-            android:textColor="@android:color/black"/>
+            android:textColor="@android:color/black" />
 
     </RelativeLayout>
 </androidx.cardview.widget.CardView>
