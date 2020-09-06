@@ -28,8 +28,8 @@ public class Helper {
 
     public String base64String(Uri uri, Context context) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        Bitmap bitmap = null;
         try {
+            Bitmap bitmap;
             bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
             byte[] imgByte = byteArrayOutputStream.toByteArray();
@@ -41,12 +41,12 @@ public class Helper {
     }
 
     public List<String> base64String(List<String> uri, Context context) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         List<String> base64 = new ArrayList<>();
         for (int i = 0; i < uri.size(); i++) {
             Bitmap bitmap;
             if (uri.get(i).contains("content")) {
                 try {
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                     bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), Uri.parse(uri.get(i)));
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 70, byteArrayOutputStream);
                     byte[] imgByte = byteArrayOutputStream.toByteArray();

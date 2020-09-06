@@ -98,6 +98,7 @@ public class ProductFragment extends Fragment {
         sliderImages.add("https://sambalpurihaat.com/admin/images/banners/vendor_banner3.jpg");
         imageSliderAdapter = new ImageSliderAdapter(getContext(), sliderImages);
         imageSlider.setSliderAdapter(imageSliderAdapter);
+
         //get products from local db
         showSavedProducts();
 
@@ -105,155 +106,6 @@ public class ProductFragment extends Fragment {
         refresher.setOnRefreshListener(this::getProducts);
 
     }
-
-    /*private void checkAndSaveToServer() {
-        List<Products> localProducts = new ArrayList<>();
-        //Fetching products from local db and checking if saved to server or not
-        productViewModel.getProductList().observe(getViewLifecycleOwner(), productRooms -> {
-            if (!productRooms.isEmpty()) {
-                Log.e(TAG, "Product room size: " + productRooms.size());
-                for (ProductRoom a : productRooms) {
-                    localProducts.add(new Products(a.productId, a.userId, a.title, a.company, a.description, a.variants));
-                }
-            }
-        });
-
-        //Products which are fetched and saved in local db2
-        savedProductViewModel.getProductList().observe(getViewLifecycleOwner(), savedProductRooms -> {
-            if (!localProducts.isEmpty()) {
-                if (!savedProductRooms.isEmpty()) {
-                    Log.e(TAG, "Saved room size: " + savedProductRooms.size());
-                    List<ProductsItem> serverProducts = new ArrayList<>();
-                    List<String> productIds = new ArrayList<>();
-                    for (SavedProductRoom a : savedProductRooms) {
-                        serverProducts.add(new ProductsItem(
-                                a.productId, a.description, a.company, a.title, a.variants)
-                        );
-                    }
-                    for (ProductsItem a : serverProducts) {
-                        productIds.add(a.getProductId());
-                    }
-                    for (Products a : localProducts) {
-                        if (localProducts.size() > serverProducts.size() && !productIds.contains(a.getProduct_id())) {
-                            Log.e(TAG, "Sending products to server: local products " + localProducts.size() + "\n" + "Server products " + savedProductRooms.size());
-                            List<String> deletedId;
-                            deletedId = UsersSharedPrefManager.getInstance(getContext()).getDeletedProducts();
-                            if (deletedId != null) {
-                                if (!deletedId.contains(a.getProduct_id())) {
-                                    List<Variants> newVariantList = new ArrayList<>();
-                                    for (Variants b : a.getVariants()) {
-                                        newVariantList.add(new Variants(
-                                                b.getVariant_name(),
-                                                b.getQuantity(),
-                                                b.getPrice(),
-                                                helper.base64String(b.getImage(), getContext())
-                                        ));
-                                    }
-                                    api.saveProducts(
-                                            a.getCompany(),
-                                            a.getDescription(),
-                                            a.getProduct_id(),
-                                            a.getTitle(),
-                                            a.getUid(),
-                                            new Gson().toJson(newVariantList)
-                                    ).enqueue(new Callback<SaveResponse>() {
-                                        @Override
-                                        public void onResponse(Call<SaveResponse> call, Response<SaveResponse> response) {
-                                            if (response.isSuccessful()) {
-                                                Log.e(TAG, "onResponse: " + response.body().getMessage());
-                                                if (response.body().getError().equals("false")) {
-                                                    Log.e(TAG, "Product: " + a.getTitle() + " is saved successfully");
-                                                    Toast.makeText(getContext(), "Product: " + a.getTitle() + " is saved successfully", Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<SaveResponse> call, Throwable t) {
-                                            Log.e(TAG, "onFailure: " + t);
-                                        }
-                                    });
-                                }
-                            } else {
-                                List<Variants> newVariantList = new ArrayList<>();
-                                for (Variants b : a.getVariants()) {
-                                    newVariantList.add(new Variants(
-                                            b.getVariant_name(),
-                                            b.getQuantity(),
-                                            b.getPrice(),
-                                            helper.base64String(b.getImage(), getContext())
-                                    ));
-                                }
-                                api.saveProducts(
-                                        a.getCompany(),
-                                        a.getDescription(),
-                                        a.getProduct_id(),
-                                        a.getTitle(),
-                                        a.getUid(),
-                                        new Gson().toJson(newVariantList)
-                                ).enqueue(new Callback<SaveResponse>() {
-                                    @Override
-                                    public void onResponse(Call<SaveResponse> call, Response<SaveResponse> response) {
-                                        if (response.isSuccessful()) {
-                                            Log.e(TAG, "onResponse: " + response.body().getMessage());
-                                            if (response.body().getError().equals("false")) {
-                                                Log.e(TAG, "Product: " + a.getTitle() + " is saved successfully");
-                                                Toast.makeText(getContext(), "Product: " + a.getTitle() + " is saved successfully", Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onFailure(Call<SaveResponse> call, Throwable t) {
-                                        Log.e(TAG, "onFailure: " + t);
-                                    }
-                                });
-                            }
-                        }
-                    }
-                } else {
-                    //Products which are only saved in local db
-                    Log.e(TAG, "Sending products to server: Fresh start");
-                    for (Products a : localProducts) {
-                        List<Variants> newVariantList = new ArrayList<>();
-                        for (Variants b : a.getVariants()) {
-                            newVariantList.add(new Variants(
-                                    b.getVariant_name(),
-                                    b.getQuantity(),
-                                    b.getPrice(),
-                                    helper.base64String(b.getImage(), getContext())
-                            ));
-                        }
-                        api.saveProducts(
-                                a.getCompany(),
-                                a.getDescription(),
-                                a.getProduct_id(),
-                                a.getTitle(),
-                                a.getUid(),
-                                new Gson().toJson(newVariantList)
-                        ).enqueue(new Callback<SaveResponse>() {
-                            @Override
-                            public void onResponse(Call<SaveResponse> call, Response<SaveResponse> response) {
-                                if (response.isSuccessful()) {
-                                    Log.e(TAG, "onResponse: " + response.body().getMessage());
-                                    if (response.body().getError().equals("false")) {
-                                        Log.e(TAG, "Product: " + a.getTitle() + " is saved successfully");
-                                        Toast.makeText(getContext(), "Product: " + a.getTitle() + " is saved successfully", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<SaveResponse> call, Throwable t) {
-                                Log.e(TAG, "onFailure: " + t);
-                            }
-                        });
-                    }
-                }
-            }
-        });
-
-    }*/
 
     private void deleteProducts(List<ProductsItem> selectedProducts) {
         if (selectedProducts != null) {
@@ -304,16 +156,6 @@ public class ProductFragment extends Fragment {
             });
         } else
             getProducts();
-    }
-
-    private void writeToAFile(List<String> image) {
-        try {
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(getContext().openFileOutput("confi70.txt", Context.MODE_PRIVATE));
-            outputStreamWriter.write(image.get(0));
-            outputStreamWriter.close();
-        } catch (IOException e) {
-            Log.e("Exception", "File write failed: " + e.toString());
-        }
     }
 
     private void getProducts() {

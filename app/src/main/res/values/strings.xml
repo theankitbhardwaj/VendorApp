@@ -14,6 +14,7 @@
 
     <string name="facebook_app_id">289691188994384</string>
     <string name="fb_login_protocol_scheme">fb289691188994384</string>
+    <string name="help">Facing any issue while uploading product?\nSend us your problem. We\'ll contact you and get it resolved.</string>
 
 
 </resources>

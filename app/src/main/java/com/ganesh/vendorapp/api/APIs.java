@@ -87,7 +87,8 @@ public interface APIs {
             @Field("uid") String id,
             @Field("name") String name,
             @Field("message") String query,
-            @Field("timestamp") String timeStamp);
+            @Field("timestamp") String timeStamp,
+            @Field("image") String image);
 
 
 }

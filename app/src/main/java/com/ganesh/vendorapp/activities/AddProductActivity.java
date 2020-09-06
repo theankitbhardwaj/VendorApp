@@ -2,6 +2,7 @@ package com.ganesh.vendorapp.activities;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -34,6 +35,8 @@ import com.ganesh.vendorapp.storage.UsersSharedPrefManager;
 import com.ganesh.vendorapp.utils.Helper;
 import com.google.gson.Gson;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -411,6 +414,7 @@ public class AddProductActivity extends AppCompatActivity {
 
     }
 
+
     private void saveProductItem() {
         if (validateMainData()) {
             if (!variantListForAdapter.isEmpty()) {
@@ -424,6 +428,7 @@ public class AddProductActivity extends AppCompatActivity {
                                 b.getPrice(),
                                 helper.base64String(b.getImage(), this)
                         ));
+//                        writeToFile(helper.base64String(b.getImage(), this).toString(), this);
                     }
                     api.saveProducts(
                             company.getText().toString().trim(),
@@ -472,25 +477,6 @@ public class AddProductActivity extends AppCompatActivity {
             accessGranted = true;
     }
 
-    private List<Variants> getVariantData() {
-        List<Variants> variants = new ArrayList<>();
-        List<Variants> temp = new ArrayList<>();
-
-        for (int i = 0; i < temp.size(); i++) {
-            if (helper.validateVariantData(temp.get(i))) {
-                variants.add(new Variants(temp.get(i).getVariant_name(),
-                        temp.get(i).getQuantity(),
-                        temp.get(i).getPrice(),
-                        temp.get(i).getImage()));
-            } else {
-                Toast.makeText(this, "Variant at " + (i + 1) + " is not completed", Toast.LENGTH_SHORT).show();
-                return null;
-            }
-        }
-        if (variants.isEmpty())
-            return null;
-        return variants;
-    }
 
     private boolean validateMainData() {
         return !title.getText().toString().trim().equals("");
