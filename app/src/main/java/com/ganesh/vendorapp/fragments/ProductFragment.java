@@ -24,11 +24,13 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.ganesh.vendorapp.R;
 import com.ganesh.vendorapp.adapters.ImageSliderAdapter;
+import com.ganesh.vendorapp.adapters.OutofStockAdapter;
 import com.ganesh.vendorapp.api.APIs;
 import com.ganesh.vendorapp.api.RetrofitClient;
 import com.ganesh.vendorapp.adapters.ProductsAdapter;
 import com.ganesh.vendorapp.models.ProductsItem;
 import com.ganesh.vendorapp.models.ProductsResponse;
+import com.ganesh.vendorapp.models.VariantsItem;
 import com.ganesh.vendorapp.storage.ProductRoom;
 import com.ganesh.vendorapp.storage.SavedProductRoom;
 import com.ganesh.vendorapp.storage.UsersSharedPrefManager;
@@ -104,7 +106,6 @@ public class ProductFragment extends Fragment {
 
         //refreshes data with api data
         refresher.setOnRefreshListener(this::getProducts);
-
     }
 
     private void deleteProducts(List<ProductsItem> selectedProducts) {
@@ -144,12 +145,16 @@ public class ProductFragment extends Fragment {
             savedProductViewModel.getProductList().observe(getViewLifecycleOwner(), savedProductRooms -> {
                 if (!savedProductRooms.isEmpty()) {
                     List<ProductsItem> savedProducts = new ArrayList<>();
-                    Log.e(TAG, "savedProductViewModel: " + savedProductRooms.size());
                     for (SavedProductRoom a : savedProductRooms) {
-                        savedProducts.add(new ProductsItem(a.productId, a.description, a.company, a.title, a.variants));
-                        Log.e(TAG, "Saved Product: " + a.productId);
+                        List<VariantsItem> outOfStockVariants = new ArrayList<>();
+                        for (int i = 0; i < a.variants.size(); i++) {
+                            if (a.variants.get(i).getQuantity() != 0) {
+                                outOfStockVariants.add(a.variants.get(i));
+                            }
+                        }
+                        if (!outOfStockVariants.isEmpty())
+                            savedProducts.add(new ProductsItem(a.productId, a.description, a.company, a.title, outOfStockVariants));
                     }
-                    Log.e(TAG, "savedProducts: " + savedProducts.size());
                     productsAdapter = new ProductsAdapter(savedProducts, getContext());
                     productRecycler.setAdapter(productsAdapter);
                 }
@@ -171,7 +176,6 @@ public class ProductFragment extends Fragment {
                                     noData.setVisibility(View.GONE);
                                     productRecycler.setVisibility(View.VISIBLE);
                                     for (ProductsItem a : productsItems) {
-                                        Log.e(TAG, "Product from API: " + a.toString());
                                         savedProductRoom = new SavedProductRoom();
                                         savedProductRoom.title = a.getTitle();
                                         savedProductRoom.company = a.getCompany();

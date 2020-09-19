@@ -39,11 +39,14 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_variant_name"
-                android:layout_width="200dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
                 android:hint="Title / Name of the saree"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:hintTextColor="@color/colorWhite"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView8">
@@ -58,12 +61,13 @@
                     android:textSize="14sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <!--<com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout"
                 android:layout_width="140dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="24dp"
+                android:visibility="gone"
                 android:layout_marginEnd="16dp"
                 android:hint="Supplier Name"
                 app:hintTextColor="@color/colorWhite"
@@ -79,7 +83,7 @@
                     android:maxLines="1"
                     android:textColor="@color/colorWhite"
                     android:textSize="14sp" />
-            </com.google.android.material.textfield.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>-->
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"

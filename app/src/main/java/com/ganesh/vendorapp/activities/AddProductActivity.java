@@ -46,7 +46,7 @@ import retrofit2.Response;
 
 public class AddProductActivity extends AppCompatActivity {
 
-    private EditText title, company, description;
+    private EditText title,  description;
     private RecyclerView variantRecycler;
     private VariantAdapter variantAdapter;
     private List<Variants> variantListForAdapter;
@@ -71,7 +71,6 @@ public class AddProductActivity extends AppCompatActivity {
         askPermission();
 
         title = findViewById(R.id.et_item_title);
-        company = findViewById(R.id.et_item_company);
         description = findViewById(R.id.et_item_desc);
         variantRecycler = findViewById(R.id.variantRecycler);
         variantName = findViewById(R.id.et_variant_name);
@@ -431,7 +430,6 @@ public class AddProductActivity extends AppCompatActivity {
 //                        writeToFile(helper.base64String(b.getImage(), this).toString(), this);
                     }
                     api.saveProducts(
-                            company.getText().toString().trim(),
                             description.getText().toString().trim(),
                             helper.getRandomID(),
                             title.getText().toString().trim(),

@@ -53,7 +53,6 @@ public interface APIs {
     @FormUrlEncoded
     @POST("vendor/saveproduct")
     Call<SaveResponse> saveProducts(
-            @Field("company") String company,
             @Field("description") String description,
             @Field("product_id") String productID,
             @Field("title") String title,

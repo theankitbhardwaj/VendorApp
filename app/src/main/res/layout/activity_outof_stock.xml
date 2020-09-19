@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.ProductDetailActivity">
+    tools:context=".activities.OutofStockActivity">
 
 
     <LinearLayout
@@ -24,14 +24,6 @@
             android:textSize="25sp"
             android:textStyle="bold" />
 
-      <!--  <TextView
-            android:id="@+id/company"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="by Summer Collection"
-            android:textColor="@android:color/white"
-            android:textSize="18sp" />-->
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -79,18 +71,6 @@
         android:layout_marginHorizontal="10dp"
         android:layout_marginTop="10dp" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/editProduct"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="20dp"
-        android:src="@drawable/ic_baseline_edit_24"
-        app:backgroundTint="@color/colorPrimary"
-        app:elevation="6dp"
-        app:fabSize="auto" />
 
 
 </RelativeLayout>

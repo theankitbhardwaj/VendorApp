@@ -49,7 +49,7 @@ import retrofit2.Response;
 
 public class EditProductActivity extends AppCompatActivity {
 
-    private EditText title, company, description;
+    private EditText title, description;
     private RecyclerView variantRecycler;
     private EditVariantAdapter variantAdapter;
     private List<VariantsItem> variantListForAdapter;
@@ -78,7 +78,6 @@ public class EditProductActivity extends AppCompatActivity {
         product = (ProductsItem) getIntent().getExtras().get("product");
 
         title = findViewById(R.id.et_item_title);
-        company = findViewById(R.id.et_item_company);
         description = findViewById(R.id.et_item_desc);
         variantRecycler = findViewById(R.id.variantRecycler);
         variantName = findViewById(R.id.et_variant_name);
@@ -111,7 +110,6 @@ public class EditProductActivity extends AppCompatActivity {
         variantRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         title.setText(product.getTitle());
-        company.setText(product.getCompany());
         description.setText(product.getDescription());
         variantListForAdapter = product.getVariants();
         variantId.setText("0");
@@ -563,7 +561,7 @@ public class EditProductActivity extends AppCompatActivity {
                         ));
                     }
                     RetrofitClient.getInstance().getApi().updateProduct(
-                            company.getText().toString().trim(),
+                            product.getCompany(),
                             description.getText().toString().trim(),
                             product.getProductId(),
                             title.getText().toString().trim(),
