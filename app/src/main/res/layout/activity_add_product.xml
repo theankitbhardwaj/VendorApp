@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/darkGray">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main_layout_add_product"
@@ -31,7 +32,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:text="Add Item Details"
-                android:textColor="@color/colorWhite"
+                android:textColor="@android:color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -46,8 +47,8 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:hint="Title / Name of the saree"
+                android:textColor="@android:color/black"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:hintTextColor="@color/colorWhite"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView8">
 
@@ -57,7 +58,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textShortMessage"
                     android:maxLines="1"
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@android:color/black"
                     android:textSize="14sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -93,7 +94,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:hint="Description"
-                app:hintTextColor="@color/colorWhite"
+                android:textColor="@android:color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -103,7 +104,7 @@
                     android:id="@+id/et_item_desc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorWhite"
+                    android:textColor="@android:color/black"
                     android:textSize="14sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -129,7 +130,7 @@
                 android:orientation="vertical"
                 android:padding="2dp"
                 android:text="Variants"
-                android:textColor="@color/colorWhite"
+                android:textColor="@android:color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -162,7 +163,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardBackgroundColor="@color/colorWhite"
             app:cardCornerRadius="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -186,7 +187,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="textShortMessage"
                         android:maxLines="1"
-                        android:textColor="@android:color/white"
+                        android:textColor="@android:color/black"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -199,7 +200,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="15dp"
                     android:text="Add Images"
-                    android:textColor="@android:color/white"
+                    android:textColor="@android:color/black"
                     android:textSize="18sp" />
 
                 <LinearLayout
@@ -226,7 +227,7 @@
                             android:layout_height="wrap_content"
                             android:inputType="numberSigned|number"
                             android:maxLines="1"
-                            android:textColor="@android:color/white"
+                            android:textColor="@android:color/black"
                             android:textSize="14sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -244,7 +245,7 @@
                             android:layout_height="wrap_content"
                             android:inputType="number|numberDecimal"
                             android:maxLines="1"
-                            android:textColor="@android:color/white"
+                            android:textColor="@android:color/black"
                             android:textSize="14sp" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
@@ -259,6 +260,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
+                        android:background="@color/darkGray"
                         android:orientation="horizontal">
 
                         <RelativeLayout
@@ -431,7 +433,8 @@
                     android:layout_marginEnd="15dp"
                     android:background="@drawable/primary_bg_r100"
                     android:text="Save"
-                    android:textAllCaps="false" />
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorWhite" />
 
             </RelativeLayout>
 

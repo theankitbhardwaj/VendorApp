@@ -28,7 +28,7 @@ import retrofit2.Response;
 public class ProfileActivity extends AppCompatActivity {
 
     private EditText inputFullName, inputPhoneNo, inputEmail;
-    private Button btnSave;
+    private Button btnSave,back;
     private LoadingDialog loadingDialog;
 
     @Override
@@ -36,13 +36,10 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        findViewById(R.id.main_layout_profile).setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean b) {
-                if (b) {
-                    InputMethodManager inputMethodManager = (InputMethodManager) ProfileActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
-                    inputMethodManager.hideSoftInputFromWindow(ProfileActivity.this.getCurrentFocus().getWindowToken(), 0);
-                }
+        findViewById(R.id.main_layout_profile).setOnFocusChangeListener((view, b) -> {
+            if (b) {
+                InputMethodManager inputMethodManager = (InputMethodManager) ProfileActivity.this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(ProfileActivity.this.getCurrentFocus().getWindowToken(), 0);
             }
         });
 
@@ -50,6 +47,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         inputFullName = findViewById(R.id.inputFullName);
         inputPhoneNo = findViewById(R.id.inputPhoneNo);
+        back = findViewById(R.id.btnBack);
 //        inputEmail = findViewById(R.id.inputEmail);
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
@@ -79,6 +77,9 @@ public class ProfileActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btnSave);
         btnSave.setOnClickListener((View v) -> {
             saveUserProfile();
+        });
+        back.setOnClickListener(view -> {
+            finish();
         });
 
     }

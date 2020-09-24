@@ -20,6 +20,10 @@ public class VariantsItem implements Serializable {
     @Expose
     private int quantity;
 
+    @SerializedName("current_quantity")
+    @Expose
+    private int currentQuantity;
+
     @SerializedName("price")
     @Expose
     private int price;
@@ -28,63 +32,72 @@ public class VariantsItem implements Serializable {
     @Expose
     private String variantName;
 
-    public VariantsItem(List<String> image, int variantId, int quantity, int price, String variantName) {
+    public VariantsItem(List<String> image, int variantId, int quantity, int currentQuantity, int price, String variantName) {
         this.image = image;
         this.variantId = variantId;
         this.quantity = quantity;
+        this.currentQuantity = currentQuantity;
         this.price = price;
         this.variantName = variantName;
-    }
-
-    public void setImage(List<String> image) {
-        this.image = image;
     }
 
     public List<String> getImage() {
         return image;
     }
 
-    public void setVariantId(int variantId) {
-        this.variantId = variantId;
+    public void setImage(List<String> image) {
+        this.image = image;
     }
 
     public int getVariantId() {
         return variantId;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setVariantId(int variantId) {
+        this.variantId = variantId;
     }
 
     public int getQuantity() {
         return quantity;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public int getCurrentQuantity() {
+        return currentQuantity;
+    }
+
+    public void setCurrentQuantity(int currentQuantity) {
+        this.currentQuantity = currentQuantity;
     }
 
     public int getPrice() {
         return price;
     }
 
-    public void setVariantName(String variantName) {
-        this.variantName = variantName;
+    public void setPrice(int price) {
+        this.price = price;
     }
 
     public String getVariantName() {
         return variantName;
     }
 
+    public void setVariantName(String variantName) {
+        this.variantName = variantName;
+    }
+
     @Override
     public String toString() {
-        return
-                "VariantsItem{" +
-                        "image = '" + image + '\'' +
-                        ",variant_id = '" + variantId + '\'' +
-                        ",quantity = '" + quantity + '\'' +
-                        ",price = '" + price + '\'' +
-                        ",variant_name = '" + variantName + '\'' +
-                        "}";
+        return "VariantsItem{" +
+                "image=" + image +
+                ", variantId=" + variantId +
+                ", quantity=" + quantity +
+                ", currentQuantity=" + currentQuantity +
+                ", price=" + price +
+                ", variantName='" + variantName + '\'' +
+                '}';
     }
 }

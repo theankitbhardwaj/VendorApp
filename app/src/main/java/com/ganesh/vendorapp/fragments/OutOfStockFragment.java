@@ -94,7 +94,7 @@ public class OutOfStockFragment extends Fragment {
                     for (SavedProductRoom a : savedProductRooms) {
                         List<VariantsItem> outOfStockVariants = new ArrayList<>();
                         for (int i = 0; i < a.variants.size(); i++) {
-                            if (a.variants.get(i).getQuantity() == 0) {
+                            if (a.variants.get(i).getCurrentQuantity() != a.variants.get(i).getQuantity()) {
                                 outOfStockVariants.add(a.variants.get(i));
                             }
                         }

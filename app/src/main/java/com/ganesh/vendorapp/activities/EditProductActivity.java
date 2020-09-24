@@ -139,6 +139,7 @@ public class EditProductActivity extends AppCompatActivity {
                         UsersSharedPrefManager.getInstance(this).getVariantImages(),
                         Integer.parseInt(variantId.getText().toString()),
                         Integer.parseInt(variantQuantity.getText().toString().trim()),
+                        Integer.parseInt(variantQuantity.getText().toString().trim()),
                         Integer.parseInt(variantPrice.getText().toString().trim()),
                         variantName.getText().toString().trim()
                 ));
@@ -146,6 +147,7 @@ public class EditProductActivity extends AppCompatActivity {
                 variantListForAdapter.set(variantPos, new VariantsItem(
                         UsersSharedPrefManager.getInstance(this).getVariantImages(),
                         Integer.parseInt(variantId.getText().toString()),
+                        Integer.parseInt(variantQuantity.getText().toString().trim()),
                         Integer.parseInt(variantQuantity.getText().toString().trim()),
                         Integer.parseInt(variantPrice.getText().toString().trim()),
                         variantName.getText().toString().trim()
@@ -556,6 +558,7 @@ public class EditProductActivity extends AppCompatActivity {
                                 helper.base64String(b.getImage(), this),
                                 b.getVariantId(),
                                 b.getQuantity(),
+                                b.getQuantity(),
                                 b.getPrice(),
                                 b.getVariantName()
                         ));
@@ -608,38 +611,6 @@ public class EditProductActivity extends AppCompatActivity {
             progressDialog.dismiss();
         }
     }
-
-    /*private List<VariantsItem> getVariantData() {
-        List<VariantsItem> variants = new ArrayList<>();
-        List<VariantsItem> temp = variantAdapter.getArrayList();
-
-        for (int i = 0; i < temp.size(); i++) {
-            if (helper.validateVariantData(temp.get(i))) {
-                variants.add(new VariantsItem(checkImageUrl(temp.get(i).getImage()),
-                        temp.get(i).getVariantId(),
-                        temp.get(i).getQuantity(),
-                        temp.get(i).getPrice(),
-                        temp.get(i).getVariantName()));
-            } else {
-                Toast.makeText(this, "Variant at " + (i + 1) + " is not completed", Toast.LENGTH_SHORT).show();
-                return null;
-            }
-        }
-        if (variants.isEmpty())
-            return null;
-        return variants;
-    }
-
-    private List<String> checkImageUrl(List<String> image) {
-        List<String> imageUrls = new ArrayList<>();
-        for (String a : image) {
-            if (a.contains("content"))
-                imageUrls.add(helper.base64String(Uri.parse(a), this));
-            else
-                imageUrls.add(a);
-        }
-        return imageUrls;
-    }*/
 
     private boolean validateMainData() {
         return !title.getText().toString().trim().equals("");

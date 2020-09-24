@@ -47,7 +47,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         title.setText(product.getTitle());
         description.setText(product.getDescription());
-        displayVariantAdapter = new DisplayVariantAdapter(checkQuantity(product.getVariants()), this);
+        displayVariantAdapter = new DisplayVariantAdapter(product.getVariants(), this);
         variantRecycler.setLayoutManager(new LinearLayoutManager(this));
         variantRecycler.setAdapter(displayVariantAdapter);
 
@@ -58,12 +58,5 @@ public class ProductDetailActivity extends AppCompatActivity {
         });
     }
 
-    private List<VariantsItem> checkQuantity(List<VariantsItem> variants) {
-        List<VariantsItem> finalList = new ArrayList<>();
-        for (int i = 0; i < variants.size(); i++) {
-            if (variants.get(i).getQuantity() != 0)
-                finalList.add(variants.get(i));
-        }
-        return finalList;
-    }
+
 }

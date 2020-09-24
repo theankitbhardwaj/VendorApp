@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,18 +13,17 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ganesh.vendorapp.R;
-import com.ganesh.vendorapp.models.Variants;
 import com.ganesh.vendorapp.models.VariantsItem;
 import com.smarteist.autoimageslider.SliderView;
 
 import java.util.List;
 
-public class DisplayVariantAdapter extends RecyclerView.Adapter<DisplayVariantAdapter.ViewHolder> {
+public class OutOfStockVariantAdapter extends RecyclerView.Adapter<OutOfStockVariantAdapter.ViewHolder> {
 
     List<VariantsItem> variantsItems;
     Context context;
 
-    public DisplayVariantAdapter(List<VariantsItem> variantsItems, Context context) {
+    public OutOfStockVariantAdapter(List<VariantsItem> variantsItems, Context context) {
         this.variantsItems = variantsItems;
         this.context = context;
     }
@@ -41,7 +39,7 @@ public class DisplayVariantAdapter extends RecyclerView.Adapter<DisplayVariantAd
         ImageSliderAdapter imageSliderAdapter;
         holder.title.setText(variantsItems.get(position).getVariantName());
         holder.price.setText("Each unit price is - " + variantsItems.get(position).getPrice());
-        holder.quantity.setText("Quantity available - " + variantsItems.get(position).getCurrentQuantity());
+        holder.quantity.setText("Sold out Quantity - " + (variantsItems.get(position).getQuantity() - variantsItems.get(position).getCurrentQuantity()));
         imageSliderAdapter = new ImageSliderAdapter(context, variantsItems.get(position).getImage());
         holder.imageSlider.setSliderAdapter(imageSliderAdapter);
         if (position % 2 != 0)

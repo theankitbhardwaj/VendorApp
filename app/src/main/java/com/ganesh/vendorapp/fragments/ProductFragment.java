@@ -146,14 +146,14 @@ public class ProductFragment extends Fragment {
                 if (!savedProductRooms.isEmpty()) {
                     List<ProductsItem> savedProducts = new ArrayList<>();
                     for (SavedProductRoom a : savedProductRooms) {
-                        List<VariantsItem> outOfStockVariants = new ArrayList<>();
+                        List<VariantsItem> inStockVariants = new ArrayList<>();
                         for (int i = 0; i < a.variants.size(); i++) {
-                            if (a.variants.get(i).getQuantity() != 0) {
-                                outOfStockVariants.add(a.variants.get(i));
+                            if (a.variants.get(i).getCurrentQuantity() != 0) {
+                                inStockVariants.add(a.variants.get(i));
                             }
                         }
-                        if (!outOfStockVariants.isEmpty())
-                            savedProducts.add(new ProductsItem(a.productId, a.description, a.company, a.title, outOfStockVariants));
+                        if (!inStockVariants.isEmpty())
+                            savedProducts.add(new ProductsItem(a.productId, a.description, a.company, a.title, inStockVariants));
                     }
                     productsAdapter = new ProductsAdapter(savedProducts, getContext());
                     productRecycler.setAdapter(productsAdapter);
