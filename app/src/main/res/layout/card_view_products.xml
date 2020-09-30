@@ -2,26 +2,31 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/tv_color_variants"
+    android:id="@+id/card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
     android:padding="10dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp">
 
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:layout_width="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:layout_height="wrap_content" />
 
         <ImageView
             android:id="@+id/imageView6"
             android:layout_width="200dp"
-            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/checkBox"
+            android:layout_height="150dp"
             android:adjustViewBounds="true"
             android:scaleType="centerInside"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/sample_item2" />
 
         <TextView
@@ -29,8 +34,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_toEndOf="@id/imageView6"
             android:text="Kargil"
-            android:textColor="@color/darkGray"
+            android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/imageView6"
@@ -39,30 +45,21 @@
         <TextView
             android:id="@+id/tv_item_company"
             android:layout_width="wrap_content"
+            android:layout_toEndOf="@id/imageView6"
             android:layout_height="wrap_content"
+            android:layout_below="@id/tv_item_title"
             android:layout_marginStart="16dp"
             android:layout_marginTop="5dp"
             android:text="Company"
-            android:textColor="@color/darkGray"
             android:textSize="14sp"
             app:layout_constraintStart_toEndOf="@+id/imageView6"
             app:layout_constraintTop_toBottomOf="@+id/tv_item_title" />
 
         <ImageButton
-            android:id="@+id/ib_fav_item"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:backgroundTint="@color/transparent"
-            android:padding="0dp"
-            android:tint="@color/colorPrimary"
-            app:layout_constraintEnd_toStartOf="@+id/ib_edit_item"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_favorite" />
-
-        <ImageButton
             android:id="@+id/ib_edit_item"
             android:layout_width="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/transparent"
             android:padding="0dp"
@@ -74,7 +71,9 @@
         <TextView
             android:id="@+id/tv_item_color_variant"
             android:layout_width="wrap_content"
+            android:layout_toEndOf="@id/imageView6"
             android:layout_height="wrap_content"
+            android:layout_below="@id/tv_item_company"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:text="Color Variants : 6 "
@@ -85,7 +84,9 @@
             android:id="@+id/textView13"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/imageView6"
             android:layout_marginStart="16dp"
+            android:layout_below="@id/tv_item_color_variant"
             android:layout_marginTop="8dp"
             android:text="@string/Rs"
             app:layout_constraintStart_toEndOf="@+id/imageView6"
@@ -96,11 +97,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="3dp"
+            android:layout_below="@id/tv_item_color_variant"
             android:layout_marginTop="8dp"
+            android:layout_toEndOf="@id/textView13"
             android:text="300"
             app:layout_constraintStart_toEndOf="@+id/textView13"
             app:layout_constraintTop_toBottomOf="@+id/tv_item_color_variant" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 
 </androidx.cardview.widget.CardView>

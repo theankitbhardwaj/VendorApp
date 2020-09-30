@@ -1,12 +1,32 @@
 package com.ganesh.vendorapp.models;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Variants implements Serializable {
 
     private String variant_name;
     private int quantity;
     private double price;
+    private List<String> image;
+
+    public Variants() {
+    }
+
+    public Variants(String variant_name, int quantity, double price, List<String> image) {
+        this.variant_name = variant_name;
+        this.quantity = quantity;
+        this.price = price;
+        this.image = image;
+    }
+
+    public List<String> getImage() {
+        return image;
+    }
+
+    public void setImage(List<String> image) {
+        this.image = image;
+    }
 
     public String getVariant_name() {
         return variant_name;
@@ -32,12 +52,14 @@ public class Variants implements Serializable {
         this.price = price;
     }
 
-    public Variants() {
-    }
 
-    public Variants(String variant_name, int quantity, double price) {
-        this.variant_name = variant_name;
-        this.quantity = quantity;
-        this.price = price;
+    @Override
+    public String toString() {
+        return "Variants{" +
+                "variant_name='" + variant_name + '\'' +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", image=" + image +
+                '}';
     }
 }

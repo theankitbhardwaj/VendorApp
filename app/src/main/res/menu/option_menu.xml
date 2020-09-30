@@ -21,12 +21,6 @@
         app:showAsAction="never"
         android:icon="@drawable/ic_profile"/>
 
-    <item android:id="@+id/item_about"
-        android:title="About"
-        android:orderInCategory="4"
-        app:showAsAction="never"
-        android:icon="@drawable/ic_info"/>
-
     <item android:id="@+id/item_help"
         android:title="Help"
         app:showAsAction="never"
