@@ -189,6 +189,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void signInWithGoogle() {
+        Log.e("TAG","Signin with google");
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -311,14 +312,21 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+
         super.onActivityResult(requestCode, resultCode, data);
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             // The Task returned from this call is always completed, no need to attach
             // a listener.
+            System.out.println("ACCOUNT RC_SIGN_IN------->"+RC_SIGN_IN);
+
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            System.out.println("ACCOUNT RC_SIGN_IN------->"+task);
+
             handleSignInResult(task);
+        }else{
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+
         }
     }
 
@@ -327,6 +335,8 @@ public class LoginActivity extends AppCompatActivity {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
             // Signed in successfully, show authenticated UI.
+           System.out.println("ACCOUNT handle------->"+account.getEmail());
+            Log.d("ACCOUNT","ACCOUNT------->"+account.getEmail());
             if (account != null) {
 
                 loadingDialog.startLoadingDialog();
