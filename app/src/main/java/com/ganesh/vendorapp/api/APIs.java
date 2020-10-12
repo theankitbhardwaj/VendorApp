@@ -1,6 +1,7 @@
 package com.ganesh.vendorapp.api;
 
 import com.ganesh.vendorapp.models.DefaultResponse;
+import com.ganesh.vendorapp.models.LoginCheckResponse;
 import com.ganesh.vendorapp.models.LoginResponse;
 import com.ganesh.vendorapp.models.OtpResponse;
 import com.ganesh.vendorapp.models.Products;
@@ -31,6 +32,11 @@ public interface APIs {
     );
 
 
+    @FormUrlEncoded
+    @POST("vendor/loginuser")
+    Call<LoginCheckResponse> getCheckUser(
+            @Field("phone_no") String phone_no
+    );
     @FormUrlEncoded
     @POST("vendor/getuser")
     Call<LoginResponse> getUser(

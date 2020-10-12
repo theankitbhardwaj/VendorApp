@@ -11,6 +11,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
@@ -24,6 +25,7 @@ import com.facebook.login.LoginResult;
 import com.ganesh.vendorapp.R;
 import com.ganesh.vendorapp.api.RetrofitClient;
 import com.ganesh.vendorapp.models.LoadingDialog;
+import com.ganesh.vendorapp.models.LoginCheckResponse;
 import com.ganesh.vendorapp.models.LoginResponse;
 import com.ganesh.vendorapp.models.OtpResponse;
 import com.ganesh.vendorapp.storage.UsersSharedPrefManager;
@@ -108,17 +110,53 @@ public class LoginActivity extends AppCompatActivity {
 
         btnLogin = findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener((View v) -> {
+
             signInWithPhoneNumber();
         });
 
         btnSendOtp = findViewById(R.id.otpSend);
         btnSendOtp.setOnClickListener(view -> {
-            sendOTP();
+            checkUserExist(inputPhoneNo.getText().toString().trim());
+
+//            sendOTP();
         });
 
 
     }
 
+    public void checkUserExist(String number)
+    {
+        Call<LoginCheckResponse> call = RetrofitClient.getInstance().getApi().getCheckUser(number);
+        call.enqueue(new Callback<LoginCheckResponse>() {
+            @Override
+            public void onResponse(Call<LoginCheckResponse> call, Response<LoginCheckResponse> response) {
+                loadingDialog.dismissDialog();
+                LoginCheckResponse loginResponse = response.body();
+
+                if (!loginResponse.isErr()) {
+
+                    //save user in sheared preference.
+                    getUidResponse(loginResponse.getUid());/*
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);*/
+
+                } else {
+
+                  //  inputPhoneNo.setError(loginResponse.getMsg());
+                    //inputPhoneNo.requestFocus();
+                    sendOTP();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<LoginCheckResponse> call, Throwable t) {
+                System.out.println(t.getMessage());
+            }
+        });
+
+    }
     @Override
     protected void onStart() {
         super.onStart();
@@ -130,6 +168,44 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    public void getUidResponse(String uid)
+    {
+        loadingDialog.startLoadingDialog();
+        Call<LoginResponse> call = RetrofitClient.getInstance().getApi().getUser(uid);
+        call.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                loadingDialog.dismissDialog();
+                LoginResponse loginResponse = response.body();
+
+                if (!loginResponse.isErr()) {
+                    if(loginResponse.getUser().getLoginWith().equalsIgnoreCase("admin")) {
+
+                        //save user in sheared preference.
+                        UsersSharedPrefManager.getInstance(LoginActivity.this)
+                                .saveUser(loginResponse.getUser());
+
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(LoginActivity.this, "Please enter pin to login ", Toast.LENGTH_SHORT).show();
+                        sendOTP();
+                    }
+                } else {
+                    inputPhoneNo.setError(loginResponse.getMsg());
+                    inputPhoneNo.requestFocus();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                System.out.println(t.getMessage());
+            }
+        });
+
+    }
     private void signInWithPhoneNumber() {
         String pin = inputPin.getText().toString().trim();
 
