@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -350,7 +351,20 @@ public class LoginActivity extends AppCompatActivity {
         btnSendOtp.setEnabled(false);
         btnSendOtp.setText("Sending...");
         inputPin.requestFocus();
+        new CountDownTimer(300000, 1000) {
+            @Override
+            public void onTick(long millis) {
+                long minutes = millis / 1000 / 60;
+                long seconds = millis / 1000 % 60;
+                btnSendOtp.setText("Waiting for OTP... " +minutes+":"+seconds);
+            }
 
+            @Override
+            public void onFinish() {
+                btnSendOtp.setText("Resend OTP");
+                btnSendOtp.setEnabled(true);
+            }
+        }.start();
         //loadingDialog.startLoadingDialog();
         Call<OtpResponse> call = RetrofitClient.getInstance().getApi().getOtp("+91" + phone_no);
 
