@@ -22,13 +22,15 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.dimorinny.floatingtextbutton.FloatingTextButton;
+
 public class ProductDetailActivity extends AppCompatActivity {
 
     private ProductsItem product;
     private TextView title, description;
     private RecyclerView variantRecycler;
     private DisplayVariantAdapter displayVariantAdapter;
-    private FloatingActionButton edit;
+    private FloatingTextButton edit;
 
 
     @Override

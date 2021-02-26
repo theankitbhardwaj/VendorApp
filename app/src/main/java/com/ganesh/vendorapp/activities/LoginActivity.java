@@ -50,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin, btnSendOtp;
     private LoadingDialog loadingDialog;
 
-    private ImageView googleLogin, facebookLogin;
+    private ImageView googleLogin;// facebookLogin;
     CallbackManager callbackManager;
     private static final int RC_SIGN_IN = 1;
     private GoogleSignInClient mGoogleSignInClient;
@@ -90,23 +90,23 @@ public class LoginActivity extends AppCompatActivity {
 
         callbackManager = CallbackManager.Factory.create();
 
-        facebookLogin = findViewById(R.id.facebookLogin);
-        facebookLogin.setOnClickListener(view -> {
-            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
-            LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-                @Override
-                public void onSuccess(LoginResult loginResult) {
-                }
-
-                @Override
-                public void onCancel() {
-                }
-
-                @Override
-                public void onError(FacebookException error) {
-                }
-            });
-        });
+//        facebookLogin = findViewById(R.id.facebookLogin);
+//        facebookLogin.setOnClickListener(view -> {
+//            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
+//            LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+//                @Override
+//                public void onSuccess(LoginResult loginResult) {
+//                }
+//
+//                @Override
+//                public void onCancel() {
+//                }
+//
+//                @Override
+//                public void onError(FacebookException error) {
+//                }
+//            });
+//        });
 
         btnLogin = findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener((View v) -> {
@@ -118,7 +118,7 @@ public class LoginActivity extends AppCompatActivity {
         btnSendOtp.setOnClickListener(view -> {
             checkUserExist(inputPhoneNo.getText().toString().trim());
 
-//            sendOTP();
+           //sendOTP();
         });
 
 
@@ -130,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
         call.enqueue(new Callback<LoginCheckResponse>() {
             @Override
             public void onResponse(Call<LoginCheckResponse> call, Response<LoginCheckResponse> response) {
-                loadingDialog.dismissDialog();
+
                 LoginCheckResponse loginResponse = response.body();
 
                 if (!loginResponse.isErr()) {
@@ -190,7 +190,7 @@ public class LoginActivity extends AppCompatActivity {
                         startActivity(intent);
                     }else{
                         Toast.makeText(LoginActivity.this, "Please enter pin to login ", Toast.LENGTH_SHORT).show();
-                        sendOTP();
+                        //sendOTP();
                     }
                 } else {
                     inputPhoneNo.setError(loginResponse.getMsg());
@@ -215,7 +215,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
         // change it into not equals.
-        if (pin.equals(otpPin)) {
+        if (!pin.equals(otpPin)) {
 
             inputPhoneNo.setError("Required Valid Pin");
             inputPhoneNo.requestFocus();
@@ -270,65 +270,65 @@ public class LoginActivity extends AppCompatActivity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    private void signInWithFacebook(AccessToken accessToken) {
-        GraphRequest graphRequest = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
-            @Override
-            public void onCompleted(JSONObject object, GraphResponse response) {
-
-                try {
-
-                    String fbId = object.getString("id");
-                    String fbName = object.getString("first_name") + " " + object.getString("last_name");
-                    String fbMail = object.getString("email");
-
-                    loadingDialog.startLoadingDialog();
-                    Call<LoginResponse> call = RetrofitClient.getInstance().getApi().getUserbyemail(fbId, fbMail);
-
-                    call.enqueue(new Callback<LoginResponse>() {
-                        @Override
-                        public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                            LoginResponse loginResponse = response.body();
-                            loadingDialog.dismissDialog();
-
-                            if (loginResponse.isErr()) {
-                                UsersSharedPrefManager.getInstance(LoginActivity.this).setLoginWith(fbId, "facebook", fbMail, fbName);
-                                Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
-                                startActivity(intent);
-                            } else {
-
-                                //save user in sheared preference.
-                                UsersSharedPrefManager.getInstance(LoginActivity.this)
-                                        .saveUser(loginResponse.getUser());
-
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-
-                            }
-
-                        }
-
-                        @Override
-                        public void onFailure(Call<LoginResponse> call, Throwable t) {
-
-                        }
-                    });
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    AccessTokenTracker tokenTracker = new AccessTokenTracker() {
-        @Override
-        protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-            if (currentAccessToken != null) {
-                signInWithFacebook(currentAccessToken);
-            }
-        }
-    };
+//    private void signInWithFacebook(AccessToken accessToken) {
+//        GraphRequest graphRequest = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+//            @Override
+//            public void onCompleted(JSONObject object, GraphResponse response) {
+//
+//                try {
+//
+//                    String fbId = object.getString("id");
+//                    String fbName = object.getString("first_name") + " " + object.getString("last_name");
+//                    String fbMail = object.getString("email");
+//
+//                    loadingDialog.startLoadingDialog();
+//                    Call<LoginResponse> call = RetrofitClient.getInstance().getApi().getUserbyemail(fbId, fbMail);
+//
+//                    call.enqueue(new Callback<LoginResponse>() {
+//                        @Override
+//                        public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+//                            LoginResponse loginResponse = response.body();
+//                            loadingDialog.dismissDialog();
+//
+//                            if (loginResponse.isErr()) {
+//                                UsersSharedPrefManager.getInstance(LoginActivity.this).setLoginWith(fbId, "facebook", fbMail, fbName);
+//                                Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+//                                startActivity(intent);
+//                            } else {
+//
+//                                //save user in sheared preference.
+//                                UsersSharedPrefManager.getInstance(LoginActivity.this)
+//                                        .saveUser(loginResponse.getUser());
+//
+//                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                                startActivity(intent);
+//
+//                            }
+//
+//                        }
+//
+//                        @Override
+//                        public void onFailure(Call<LoginResponse> call, Throwable t) {
+//
+//                        }
+//                    });
+//
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//    }
+//
+//    AccessTokenTracker tokenTracker = new AccessTokenTracker() {
+//        @Override
+//        protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+//            if (currentAccessToken != null) {
+//                signInWithFacebook(currentAccessToken);
+//            }
+//        }
+//    };
 
 
     private void sendOTP() {
@@ -351,7 +351,7 @@ public class LoginActivity extends AppCompatActivity {
         btnSendOtp.setText("Sending...");
         inputPin.requestFocus();
 
-
+        //loadingDialog.startLoadingDialog();
         Call<OtpResponse> call = RetrofitClient.getInstance().getApi().getOtp("+91" + phone_no);
 
         call.enqueue(new Callback<OtpResponse>() {
@@ -366,7 +366,7 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     inputPhoneNo.setEnabled(true);
                     btnSendOtp.setEnabled(true);
-                    btnSendOtp.setText("Send OTP");
+                    btnSendOtp.setText("Resend OTP");
                     inputPhoneNo.setError("Sending Failed");
                     inputPhoneNo.requestFocus();
                     System.out.println(otpResponse.getMsg());
@@ -377,7 +377,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onFailure(Call<OtpResponse> call, Throwable t) {
                 inputPhoneNo.setEnabled(true);
                 btnSendOtp.setEnabled(true);
-                btnSendOtp.setText("Send OTP");
+                btnSendOtp.setText("Resend OTP");
                 inputPhoneNo.setError("Sending Failed");
                 inputPhoneNo.requestFocus();
                 System.out.println(t.getMessage());

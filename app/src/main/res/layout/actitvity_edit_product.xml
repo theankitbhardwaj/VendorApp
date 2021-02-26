@@ -31,7 +31,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:text="Add Item Details"
-                android:textColor="@color/colorWhite"
+                android:textColor="@android:color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +44,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="24dp"
                 android:hint="Title / Name of the saree"
-                app:hintTextColor="@color/colorWhite"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView8">
@@ -55,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textShortMessage"
                     android:maxLines="1"
-                    android:textColor="@color/colorWhite"
+                    android:textColor="#000000"
                     android:textSize="14sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -90,7 +89,6 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
                 android:hint="Description"
-                app:hintTextColor="@color/colorWhite"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -100,7 +98,7 @@
                     android:id="@+id/et_item_desc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorWhite"
+                    android:textColor="#000000"
                     android:textSize="14sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -126,7 +124,7 @@
                 android:orientation="vertical"
                 android:padding="2dp"
                 android:text="Variants"
-                android:textColor="@color/colorWhite"
+                android:textColor="@android:color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -159,7 +157,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            app:cardBackgroundColor="@color/colorPrimary"
+            app:cardBackgroundColor="@color/colorWhite"
             app:cardCornerRadius="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -176,7 +174,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:text="Variant ID - "
-                    android:textColor="@color/colorWhite" />
+                    android:textColor="@android:color/black" />
 
                 <TextView
                     android:id="@+id/variantId"
@@ -193,8 +191,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/variantId"
-                    android:hint="Type of variant / colors"
-                    app:hintTextColor="@color/colorWhite">
+                    android:hint="Type of variant / colors">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/et_variant_name"
@@ -202,7 +199,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="textShortMessage"
                         android:maxLines="1"
-                        android:textColor="@android:color/white"
+                        android:textColor="#000000"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -215,7 +212,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="15dp"
                     android:text="Add Images"
-                    android:textColor="@android:color/white"
+                    android:textColor="@android:color/black"
                     android:textSize="18sp" />
 
                 <LinearLayout
@@ -233,8 +230,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginRight="2dp"
                         android:layout_weight="1"
-                        android:hint="Quantity"
-                        app:hintTextColor="@color/colorWhite">
+                        android:hint="Quantity">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_variant_quantity"
@@ -242,7 +238,7 @@
                             android:layout_height="wrap_content"
                             android:inputType="numberSigned|number"
                             android:maxLines="1"
-                            android:textColor="@android:color/white"
+                            android:textColor="#000000"
                             android:textSize="14sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -251,8 +247,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="Price"
-                        app:hintTextColor="@color/colorWhite">
+                        android:hint="Price">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_variant_price"
@@ -260,7 +255,7 @@
                             android:layout_height="wrap_content"
                             android:inputType="number|numberDecimal"
                             android:maxLines="1"
-                            android:textColor="@android:color/white"
+                            android:textColor="#000000"
                             android:textSize="14sp" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
@@ -439,15 +434,16 @@
 
                 <Button
                     android:id="@+id/saveVariant"
-                    android:layout_width="100dp"
+                    android:layout_width="111dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/imageScroll"
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="15dp"
                     android:layout_marginEnd="15dp"
                     android:background="@drawable/primary_bg_r100"
-                    android:text="Save"
-                    android:textAllCaps="false" />
+                    android:text="Save Changes"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorWhite" />
 
             </RelativeLayout>
 

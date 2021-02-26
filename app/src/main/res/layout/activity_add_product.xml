@@ -158,26 +158,51 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/variantRecycler"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout3" />
+
         <androidx.cardview.widget.CardView
             android:id="@+id/variantLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             app:cardBackgroundColor="@color/colorWhite"
             app:cardCornerRadius="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
+            app:layout_constraintTop_toBottomOf="@+id/variantRecycler">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="15dp">
 
+                <Button
+                    android:id="@+id/saveVariant"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="15dp"
+                    android:background="@drawable/primary_bg_r100"
+                    android:text="Add Variant"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorWhite" />
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_variant_name2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/saveVariant"
+                    android:layout_marginTop="8dp"
                     android:hint="Type of variant / colors"
                     app:hintTextColor="@color/colorWhite">
 
@@ -260,7 +285,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:background="@color/darkGray"
                         android:orientation="horizontal">
 
                         <RelativeLayout
@@ -423,32 +447,9 @@
 
                 </HorizontalScrollView>
 
-                <Button
-                    android:id="@+id/saveVariant"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/imageScroll"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginEnd="15dp"
-                    android:background="@drawable/primary_bg_r100"
-                    android:text="Save"
-                    android:textAllCaps="false"
-                    android:textColor="@color/colorWhite" />
-
             </RelativeLayout>
 
         </androidx.cardview.widget.CardView>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/variantRecycler"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="vertical"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/variantLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

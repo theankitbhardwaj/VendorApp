@@ -79,18 +79,31 @@
         android:layout_marginHorizontal="10dp"
         android:layout_marginTop="10dp" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:id="@+id/editProduct"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_marginEnd="15dp"-->
+<!--        android:layout_marginBottom="20dp"-->
+<!--        android:src="@drawable/ic_baseline_edit_24"-->
+<!--        app:backgroundTint="@color/colorPrimary"-->
+<!--        app:elevation="6dp"-->
+<!--        app:fabSize="auto" />-->
+    <ru.dimorinny.floatingtextbutton.FloatingTextButton
         android:id="@+id/editProduct"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="15dp"
+        android:layout_marginEnd="14dp"
         android:layout_marginBottom="20dp"
-        android:src="@drawable/ic_baseline_edit_24"
-        app:backgroundTint="@color/colorPrimary"
-        app:elevation="6dp"
-        app:fabSize="auto" />
+        android:elevation="6dp"
+        app:floating_background_color="@color/colorPrimary"
+        app:floating_left_icon="@drawable/ic_baseline_edit_24"
+        app:floating_title="Edit"
+        app:floating_title_color="@android:color/white" />
 
 
 </RelativeLayout>

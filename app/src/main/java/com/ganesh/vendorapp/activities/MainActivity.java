@@ -22,6 +22,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import ru.dimorinny.floatingtextbutton.FloatingTextButton;
+
 public class MainActivity extends AppCompatActivity {
 
     private GoogleSignInClient mGoogleSignInClient;
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        FloatingActionButton addProducts = findViewById(R.id.add_product_item);
+        FloatingTextButton addProducts = findViewById(R.id.add_product_item);
         addProducts.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, AddProductActivity.class);
             startActivity(intent);

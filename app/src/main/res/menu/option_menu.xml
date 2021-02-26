@@ -23,7 +23,7 @@
 
     <item android:id="@+id/item_help"
         android:title="Help"
-        app:showAsAction="never"
+        app:showAsAction="always"
         android:orderInCategory="5"
         android:icon="@drawable/ic_help"/>
 
