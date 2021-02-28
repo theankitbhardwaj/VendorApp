@@ -356,7 +356,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onTick(long millis) {
                 long minutes = millis / 1000 / 60;
                 long seconds = millis / 1000 % 60;
-                btnSendOtp.setText("Waiting for OTP... " +minutes+":"+seconds);
+                btnSendOtp.setText(minutes+":"+seconds);
             }
 
             @Override
